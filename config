@@ -1,0 +1,18 @@
+[color]
+        ui = auto
+[user]
+        name = cthomas
+        email = chrtho@umd.umich.edu
+[alias]
+  up = pull origin
+  st = status
+  di = diff
+  co = checkout
+  ci = commit
+  br = branch
+  sta = stash
+[core]
+	editor = vim
+
+[diff "ooffice-writer"]
+    textconv = strings
