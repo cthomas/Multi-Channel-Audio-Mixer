@@ -4,3 +4,8 @@
 build
 tags
 .sconsign.dblite
+test/cxxtest/python/cxxtest/*.pyc
+test/*/*.gcda
+test/*/*.gcno
+test/*/*.gcov
+test/*/runner*
