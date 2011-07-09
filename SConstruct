@@ -10,7 +10,7 @@ import sys
 build_root = 'build'
 object_root = os.path.join(build_root, 'object')
 src_root = 'source'
-inc_root = 'include'
+inc_roots = ['include', 'source']
 program_name = 'ece554_project'
 
   #**************************************************************************************#
@@ -94,7 +94,7 @@ if '-h' not in sys.argv:
 		LINKCOMSTR= build_options_dict['output']['linker'],
 		CCCOMSTR =  build_options_dict['output']['compiler'],
 		CXXCOMSTR = build_options_dict['output']['compiler'],
-		CPPPATH = [inc_root],
+		CPPPATH = inc_roots,
 		ENV = os.environ)
 
 	env.VariantDir(object_root, src_root, duplicate=0)
