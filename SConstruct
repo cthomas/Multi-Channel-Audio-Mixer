@@ -9,9 +9,35 @@ import sys
 ###***************************************************************************************#
 build_root = 'build'
 object_root = os.path.join(build_root, 'object')
-src_root = 'source'
-inc_roots = ['include', 'source']
-program_name = 'ece554_project'
+main_src_root = 'source'
+mixer_src_root = os.path.join(main_src_root, 'AudioMixer')
+client_src_root = os.path.join(main_src_root, 'AudioClient')
+
+inc_roots = [
+	'include',
+	main_src_root,
+	mixer_src_root,
+	client_src_root,
+	'/usr/include',
+	'/usr/include/glib-2.0',
+	'/usr/lib/glib-2.0/include',
+	'/usr/local/include',
+	]
+
+lib_roots = [
+	'lib',
+	'/lib',
+	'/usr/lib',
+]
+
+libs = [
+	'pthread',
+	'glib-2.0',
+	'rt'
+]
+
+main_program_name = 'ece554_project'
+mixer_program_name = 'audio_mixer'
 
   #**************************************************************************************#
  #										        #
@@ -20,6 +46,11 @@ program_name = 'ece554_project'
 ###***************************************************************************************#
 ece554_src = [
 	'ece554_project.cpp'
+]
+
+audio_mixer_src = [
+	'audio_mixer.cpp',
+	'PlaybackThread.cpp'
 ]
 
   #**************************************************************************************#
@@ -88,14 +119,20 @@ if '-h' not in sys.argv:
 	for f in ece554_src:
 		object_root_src.append(os.path.join(object_root, f))
 
+	mixer_object_root_src = []
+	for f in audio_mixer_src:
+		mixer_object_root_src.append(os.path.join(object_root,f))
+
 	env = Environment();
 
 	env.Replace(
+		LIBPATH = lib_roots,
+		LIBS = libs,
 		LINKCOMSTR= build_options_dict['output']['linker'],
 		CCCOMSTR =  build_options_dict['output']['compiler'],
 		CXXCOMSTR = build_options_dict['output']['compiler'],
 		CPPPATH = inc_roots,
 		ENV = os.environ)
 
-	env.VariantDir(object_root, src_root, duplicate=0)
-	env.Program(target = os.path.join(build_root, program_name), source = object_root_src)
+	env.VariantDir(object_root, mixer_src_root, duplicate=0)
+	env.Program(target = os.path.join(build_root, mixer_program_name), source = mixer_object_root_src)
