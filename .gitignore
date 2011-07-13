@@ -1,6 +1,9 @@
 /*/*.swp
 *.swp
 *.swo
+*.o
+*/*.o
+*/*/*.o
 build
 tags
 .sconsign.dblite
