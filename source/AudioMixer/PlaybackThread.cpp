@@ -66,14 +66,15 @@ void *PlaybackThread::threadMain(void *data)
 						TRACE("Playing audio from channel...\n");
 //						playback_interface->playAudio(samples, samples.size());
 					}
-
 				}
+
 				TRACEF("Num Audio Samples Played [%zu]\n", playback_interface->getNumSamplesPlayed());
 			}
 
 			usleep(1000*1000*1);
 		}
 	}
+
 	return NULL;
 }
 
