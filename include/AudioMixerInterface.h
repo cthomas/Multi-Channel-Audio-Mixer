@@ -9,9 +9,9 @@ class AudioMixerInterface
 	: public virtual AudioChannelInterface
 {
 public:
-	void addChannel(AudioChannelInterface *channel) = 0;
-	void removeChannel(AudioChannelInterface *channel) = 0;
-	size_t numChannels() const = 0;
+	virtual void addChannel(AudioChannelInterface *channel) = 0;
+	virtual void removeChannel(AudioChannelInterface *channel) = 0;
+	virtual size_t numChannels() const = 0;
 };
 
 #endif
