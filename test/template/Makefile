@@ -6,6 +6,7 @@ clean:
 	rm -f runner* *.gcno *.gcov *.gcda TEST*.xml .kdbgrc.runner
 
 dist_clean: clean
-
+	rm -f tags
 tags:
-	ctags -R ../../include/ ../../source/ .
+	rm -f tags
+	ctags-exuberant -aR ../../include/ ../../source/AudioMixer ../../source/AudioClient .

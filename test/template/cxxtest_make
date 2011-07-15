@@ -29,9 +29,13 @@ echo -n "$CXX_WORLD: "
 ../cxxtest/python/scripts/cxxtestgen --have-std ${CXX_OUTPUT} -w ${CXX_WORLD} check_*.h -o runner.cpp
 
 g++ ${GCOV_FLAGS} -Wall runner.cpp -o runner -I ../cxxtest \
-		-I ../include \
-		-I ../source \
+		-I ../../include \
+		-I ../../source/AudioMixer \
 		-I ./ \
+		-I /usr/include \
+		-I /usr/include/glib-2.0 \
+		-I /usr/lib/glib-2.0/include \
+		-l asound \
 		-l glib-2.0 \
 		-l rt \
 		-l z \
