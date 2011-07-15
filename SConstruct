@@ -37,7 +37,7 @@ libs = [
 ]
 
 main_program_name = 'ece554_project'
-mixer_program_name = 'audio_mixer'
+mixer_program_name = 'audio_mixing_server'
 
 #***************************************************************************************#
 # The source files that we want to use for the build					#
