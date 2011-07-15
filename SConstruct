@@ -109,8 +109,6 @@ if '-h' not in sys.argv:
 	for f in audio_mixer_src:
 		mixer_object_root_src.append(os.path.join(object_root, mixer_src_root, f))
 
-	print mixer_object_root_src
-
 	env = Environment();
 
 	env.Replace(
