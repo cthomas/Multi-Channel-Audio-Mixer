@@ -76,36 +76,49 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 			{
 				bool error_cond = false;
 				size_t frames_sent = 0;
-				size_t frames_to_send = num_samples;
-				for(frames_sent = 0, error_cond = false; (frames_sent < frames_to_send) && !error_cond; frames_sent += (size_t)frames)
+				size_t pad_out = num_samples % AlsaPlayback::FRAME_PERIOD;
+				size_t frames_to_send = num_samples + pad_out;
+
+				AudioSample_t *send_samples = new AudioSample_t[frames_to_send];
+
+				if(send_samples)
 				{
-					if(0 != AlsaPlayback::_volume)
+					memset(send_samples, 0, sizeof(AudioSample_t)*frames_to_send);
+					memcpy(send_samples, samples, sizeof(AudioSample_t)*num_samples);
+
+					for(frames_sent = 0, error_cond = false; (frames_sent < frames_to_send) && !error_cond; frames_sent += (size_t)frames)
 					{
+						if(0 != AlsaPlayback::_volume)
+						{
 
-						rc = snd_pcm_writei(alsa_handle, &(samples[frames_sent]), frames);
+							rc = snd_pcm_writei(alsa_handle, &(send_samples[frames_sent]), frames);
 
-						if(-EPIPE == rc)
-						{
-							TRACE("playAudio() - underrun occurred in snd_pcm_writei()");
-							snd_pcm_prepare(alsa_handle);
-						}
-						else if(rc < 0)
-						{
-							TRACE("playAudio() - error occurred in snd_pcm_writei()");
-							error_cond = true;
-						}
-						else if(rc != (int)frames)
-						{
-							TRACE("playAudio() - short write occurred in snd_pcm_writei()");
-						}
-						else
-						{
-							_num_samples_played += rc;
+							if(-EPIPE == rc)
+							{
+								TRACE("playAudio() - underrun occurred in snd_pcm_writei()");
+								snd_pcm_prepare(alsa_handle);
+							}
+							else if(rc < 0)
+							{
+								TRACE("playAudio() - error occurred in snd_pcm_writei()");
+								error_cond = true;
+							}
+							else if(rc != (int)frames)
+							{
+								TRACE("playAudio() - short write occurred in snd_pcm_writei()");
+							}
+							else
+							{
+								_num_samples_played += rc;
+							}
 						}
 					}
-				}
 
-				rc = snd_pcm_drain(alsa_handle);
+					rc = snd_pcm_drain(alsa_handle);
+
+					delete[] send_samples;
+					send_samples = NULL;
+				}
 			}
 			else
 			{
