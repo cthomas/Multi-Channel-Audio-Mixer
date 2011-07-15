@@ -66,7 +66,7 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 			snd_pcm_hw_params_set_rate_near(alsa_handle, params, &AlsaPlayback::_sample_rate, &dir);
 
 			/* Set period size to 128 frames (samples) */
-			frames = AlsaPlayback::FRAME_SIZE;
+			frames = AlsaPlayback::FRAME_PERIOD;
 			snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &frames, &dir);
 
 			/* Write the parameters to the driver */

@@ -15,7 +15,7 @@ public:
 	AlsaPlayback();
 	virtual ~AlsaPlayback();
 
-	static const unsigned int FRAME_SIZE = 128;
+	static const unsigned int FRAME_PERIOD = 128;
 
 public: //AudioPlaybackInterface
 	/** @brief Interface that will play back the audio data in \asamples */

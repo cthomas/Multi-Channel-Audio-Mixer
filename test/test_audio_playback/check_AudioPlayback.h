@@ -44,10 +44,10 @@ public:
 
 	size_t playSamples()
 	{
-		AudioSample_t samples[AlsaPlayback::FRAME_SIZE*2] = {0};
-		player->playAudio(&samples[0], AlsaPlayback::FRAME_SIZE*2);
+		AudioSample_t samples[AlsaPlayback::FRAME_PERIOD*2] = {0};
+		player->playAudio(&samples[0], AlsaPlayback::FRAME_PERIOD*2);
 
-		return AlsaPlayback::FRAME_SIZE*2;
+		return AlsaPlayback::FRAME_PERIOD*2;
 	}
 
 	void remove_file(const std::string & filepath)
@@ -96,7 +96,7 @@ public:
 
 	void test_play_zero_samples_check_num_samples_zero()
 	{
-		AudioSample_t samples[AlsaPlayback::FRAME_SIZE*2] = {0};
+		AudioSample_t samples[AlsaPlayback::FRAME_PERIOD*2] = {0};
 		player->playAudio(&samples[0], 0);
 
 		TS_ASSERT_EQUALS(0u, player->getNumSamplesPlayed());
@@ -104,7 +104,7 @@ public:
 
 	void test_play_null_samples_check_num_samples_zero()
 	{
-		player->playAudio(NULL, AlsaPlayback::FRAME_SIZE*2);
+		player->playAudio(NULL, AlsaPlayback::FRAME_PERIOD*2);
 
 		TS_ASSERT_EQUALS(0u, player->getNumSamplesPlayed());
 	}
