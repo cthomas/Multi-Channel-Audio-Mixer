@@ -1,12 +1,15 @@
 
 #include <unistd.h>
 
+#include "AlsaAudioPlayback.h"
 #include "DebugMessage.h"
 
 #include "PlaybackThread.h"
 
 PlaybackThread::PlaybackThread()
 {
+	_playback_status = PlaybackInterface::IDLE;
+	_playback_channel = NULL;
 	_shutdown = false;
 	pthread_attr_init(&_attr);
 	pthread_attr_setdetachstate(&_attr, PTHREAD_CREATE_JOINABLE);
@@ -49,11 +52,25 @@ void *PlaybackThread::threadMain(void *data)
 
 	if(playback)
 	{
-		size_t count = 0;
-
 		while(!playback->shutdown())
 		{
-			TRACEF("Nothing to do here...[%zu]\n", count++);
+			AudioPlaybackInterface *playback_interface = new AlsaPlayback();
+			if(playback_interface && playback->_playback_channel)
+			{
+				if(playback->_playback_channel->size() > 0)
+				{
+					std::vector<AudioSample_t> samples = playback->_playback_channel->pop_all();
+
+					if(samples.size())
+					{
+						TRACE("Playing audio from channel...\n");
+//						playback_interface->playAudio(samples, samples.size());
+					}
+
+				}
+				TRACEF("Num Audio Samples Played [%zu]\n", playback_interface->getNumSamplesPlayed());
+			}
+
 			usleep(1000*1000*1);
 		}
 	}
@@ -80,4 +97,26 @@ bool PlaybackThread::shutdown()
 	}
 
 	return ret;
+}
+
+void PlaybackThread::setPlaybackChannel(AudioChannelInterface *channel)
+{
+	if(_mutex.lock())
+	{
+		_playback_channel = channel;
+		_mutex.unlock();
+	}
+}
+
+const PlaybackInterface::PLAYBACK_INTERFACE_STATUS PlaybackThread::getStatus()
+{
+	PlaybackInterface::PLAYBACK_INTERFACE_STATUS stat = PlaybackInterface::IDLE;
+
+	if(_mutex.lock())
+	{
+		stat = _playback_status;
+		_mutex.unlock();
+	}
+
+	return stat;
 }

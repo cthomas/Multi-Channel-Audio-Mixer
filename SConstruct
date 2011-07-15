@@ -31,6 +31,7 @@ lib_roots = [
 ]
 
 libs = [
+	'asound',
 	'pthread',
 	'glib-2.0',
 	'rt'
@@ -47,6 +48,7 @@ common_src = [
 ]
 
 audio_mixer_src = [
+	'AlsaAudioPlayback.cpp',
 	'audio_mixer.cpp',
 	'PlaybackThread.cpp'
 ]
