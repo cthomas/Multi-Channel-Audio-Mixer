@@ -8,8 +8,10 @@ import sys
 build_root = 'build'
 object_root = os.path.join(build_root, 'object')
 main_src_root = 'source'
-mixer_src_root = os.path.join(main_src_root, 'AudioMixer')
-client_src_root = os.path.join(main_src_root, 'AudioClient')
+mixer_src_root = 'AudioMixer'
+client_src_root = 'AudioClient'
+common_src_root = 'Common'
+
 
 inc_roots = [
 	'include',
@@ -40,8 +42,8 @@ mixer_program_name = 'audio_mixer'
 #***************************************************************************************#
 # The source files that we want to use for the build					#
 #***************************************************************************************#
-ece554_src = [
-	'ece554_project.cpp'
+common_src = [
+	'Mutex.cpp'
 ]
 
 audio_mixer_src = [
@@ -99,13 +101,15 @@ if '-h' not in sys.argv:
 		print '+Configuring verbose output...'
 		build_options_dict['output'] = options_dict['output']['verbose']
 
-	object_root_src = []
-	for f in ece554_src:
-		object_root_src.append(os.path.join(object_root, f))
+	common_object_root_src = []
+	for f in common_src:
+		common_object_root_src.append(os.path.join(object_root, common_src_root, f))
 
-	mixer_object_root_src = []
+	mixer_object_root_src = common_object_root_src
 	for f in audio_mixer_src:
-		mixer_object_root_src.append(os.path.join(object_root,f))
+		mixer_object_root_src.append(os.path.join(object_root, mixer_src_root, f))
+
+	print mixer_object_root_src
 
 	env = Environment();
 
@@ -118,5 +122,5 @@ if '-h' not in sys.argv:
 		CPPPATH = inc_roots,
 		ENV = os.environ)
 
-	env.VariantDir(object_root, mixer_src_root, duplicate=0)
+	env.VariantDir(object_root, main_src_root, duplicate=0)
 	env.Program(target = os.path.join(build_root, mixer_program_name), source = mixer_object_root_src)

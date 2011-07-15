@@ -2,6 +2,7 @@
 #define _PLAYBACK_THREAD_H_
 
 #include <pthread.h>
+#include "Mutex.h"
 
 class PlaybackThread
 {
@@ -11,8 +12,8 @@ private:
 	pthread_t _pthread;
 	unsigned int _thread_id;
 	pthread_attr_t _attr;
-	pthread_mutex_t _mutex;
 	bool _shutdown;
+	Mutex _mutex;
 
 	void signalShutdown();
 	bool shutdown();

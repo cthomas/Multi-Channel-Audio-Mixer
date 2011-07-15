@@ -8,7 +8,6 @@
 PlaybackThread::PlaybackThread()
 {
 	_shutdown = false;
-	pthread_mutex_init(&_mutex, NULL);
 	pthread_attr_init(&_attr);
 	pthread_attr_setdetachstate(&_attr, PTHREAD_CREATE_JOINABLE);
 	pthread_attr_setstacksize(&_attr, 128 * 1024);
@@ -21,7 +20,6 @@ PlaybackThread::~PlaybackThread()
 	pthread_join(_pthread, NULL);
 
 	TRACE("Playback thread shutting down...COMPLETE\n");
-	pthread_mutex_destroy(&_mutex);
 	pthread_attr_destroy(&_attr);
 }
 
@@ -64,10 +62,10 @@ void *PlaybackThread::threadMain(void *data)
 
 void PlaybackThread::signalShutdown()
 {
-	if(0 == pthread_mutex_lock(&_mutex))
+	if(_mutex.lock())
 	{
 		_shutdown = true;
-		pthread_mutex_unlock(&_mutex);
+		_mutex.unlock();
 	}
 }
 
@@ -75,10 +73,10 @@ bool PlaybackThread::shutdown()
 {
 	bool ret = false;
 
-	if(0 == pthread_mutex_lock(&_mutex))
+	if(_mutex.lock())
 	{
 		ret = _shutdown;
-		pthread_mutex_unlock(&_mutex);
+		_mutex.unlock();
 	}
 
 	return ret;
