@@ -11,6 +11,14 @@ void BasicAudioChannel::push_back_internal(const AudioSample_t & sample)
 	_sample_queue.push_back(sample);
 }
 
+void BasicAudioChannel::push_back_internal(const std::vector<AudioSample_t> samples)
+{
+	for(size_t i = 0; i < samples.size(); i++)
+	{
+		push_back_internal(samples[i]);
+	}
+}
+
 void BasicAudioChannel::push_back(const AudioSample_t & sample)
 {
 	if(_mutex.lock())
@@ -24,11 +32,7 @@ void BasicAudioChannel::push_back(const std::vector<AudioSample_t> samples)
 {
 	if(_mutex.lock())
 	{
-		for(size_t i = 0; i < samples.size(); i++)
-		{
-			push_back_internal(samples[i]);
-		}
-
+		push_back_internal(samples);
 		_mutex.unlock();
 	}
 }

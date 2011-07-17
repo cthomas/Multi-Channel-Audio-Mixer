@@ -14,6 +14,7 @@ protected:
 	Mutex _mutex;
 	const AudioSample_t pop_front_internal();
 	void push_back_internal(const AudioSample_t & sample);
+	void push_back_internal(const std::vector<AudioSample_t> samples);
 public:
 	virtual ~BasicAudioChannel();
 
