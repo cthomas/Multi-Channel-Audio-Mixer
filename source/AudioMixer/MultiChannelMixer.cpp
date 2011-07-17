@@ -12,14 +12,10 @@ bool ExternalLockingAudioChannel::externalUnlock()
 	return _mutex.unlock();
 }
 
-MultiChannelMixer::MultiChannelMixer()
-{
-
-}
-
 MultiChannelMixer::~MultiChannelMixer()
 {
-
+	//Drop any channels we have
+	_channels.clear();
 }
 
 void MultiChannelMixer::mixDown()
@@ -45,11 +41,13 @@ void MultiChannelMixer::mixDown()
 						}
 						else
 						{
-							push_back_internal(channel_samples[i]);
+							mixed_samples.push_back(channel_samples[i]);
 						}
 					}
 				}
 			}
+
+			push_back_internal(mixed_samples);
 
 			externalUnlock();
 		}

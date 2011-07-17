@@ -149,7 +149,141 @@ public:
 			TS_ASSERT_EQUALS(1, samples[i]);
 		}
 	}
-	//TODO Moar tests for multiple, differing channels
+
+	void test_add_two_channels_with_different_data_mix_down_mixes_the_two_channels_to_output()
+	{
+		BasicAudioChannel new_channel;
+		mixer.addChannel(&new_channel);
+		mixer.addChannel(&channel);
+		new_channel.push_back(2);
+		new_channel.push_back(2);
+		new_channel.push_back(2);
+		new_channel.push_back(2);
+		channel.push_back(1);
+		channel.push_back(1);
+		channel.push_back(1);
+		channel.push_back(1);
+
+		mixer.mixDown();
+
+		std::vector<AudioSample_t> samples = mixer.pop_all();
+
+		for(size_t i = 0; i < samples.size(); i++)
+		{
+			TS_ASSERT_EQUALS(3, samples[i]);
+		}
+	}
+
+	void test_add_two_channels_with_varying_data_mix_down_mixes_the_two_channels_to_output()
+	{
+		BasicAudioChannel new_channel;
+		mixer.addChannel(&new_channel);
+		mixer.addChannel(&channel);
+		new_channel.push_back(1);
+		new_channel.push_back(2);
+		new_channel.push_back(3);
+		new_channel.push_back(4);
+		channel.push_back(4);
+		channel.push_back(3);
+		channel.push_back(2);
+		channel.push_back(1);
+
+		mixer.mixDown();
+
+		std::vector<AudioSample_t> samples = mixer.pop_all();
+
+		for(size_t i = 0; i < samples.size(); i++)
+		{
+			TS_ASSERT_EQUALS(5, samples[i]);
+		}
+	}
+
+	void test_add_two_channels_with_varying_length_mix_down_mixes_the_two_channels_to_output()
+	{
+		BasicAudioChannel new_channel;
+		mixer.addChannel(&new_channel);
+		mixer.addChannel(&channel);
+		new_channel.push_back(1);
+		new_channel.push_back(2);
+		new_channel.push_back(3);
+		new_channel.push_back(4);
+		new_channel.push_back(4);
+		new_channel.push_back(4);
+		new_channel.push_back(4);
+		new_channel.push_back(4);
+
+		channel.push_back(4);
+		channel.push_back(3);
+		channel.push_back(2);
+		channel.push_back(1);
+
+		mixer.mixDown();
+
+		std::vector<AudioSample_t> samples = mixer.pop_all();
+
+		for(size_t i = 0; i < 4; i++)
+		{
+			TS_ASSERT_EQUALS(5, samples[i]);
+		}
+
+		for(size_t i = 4; i < samples.size(); i++)
+		{
+			TS_ASSERT_EQUALS(4, samples[i]);
+		}
+	}
+
+	void test_add_many_channels_all_different_lengths_mix_down_outputs_a_channel_of_the_greatest_length()
+	{
+		BasicAudioChannel channel1;
+		BasicAudioChannel channel2;
+		BasicAudioChannel channel3;
+		BasicAudioChannel channel4;
+
+		mixer.addChannel(&channel);
+		mixer.addChannel(&channel1);
+		mixer.addChannel(&channel2);
+		mixer.addChannel(&channel3);
+		mixer.addChannel(&channel4);
+
+		channel.push_back(4);
+
+		channel1.push_back(4);
+		channel1.push_back(3);
+
+		channel2.push_back(4);
+		channel2.push_back(3);
+		channel2.push_back(1);
+
+		channel3.push_back(4);
+		channel3.push_back(3);
+		channel3.push_back(2);
+		channel3.push_back(1);
+		channel3.push_back(4);
+		channel3.push_back(3);
+		channel3.push_back(2);
+		channel3.push_back(1);
+
+		channel4.push_back(4);
+		channel4.push_back(3);
+		channel4.push_back(2);
+		channel4.push_back(1);
+		channel4.push_back(4);
+		channel4.push_back(3);
+		channel4.push_back(2);
+		channel4.push_back(1);
+		channel4.push_back(4);
+		channel4.push_back(3);
+		channel4.push_back(2);
+		channel4.push_back(1);
+
+		size_t max_size = channel4.size();
+
+		mixer.mixDown();
+
+		std::vector<AudioSample_t> samples = mixer.pop_all();
+
+		TS_ASSERT_EQUALS(samples.size(), max_size);
+	}
 };
 
 #endif

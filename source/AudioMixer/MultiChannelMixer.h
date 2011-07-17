@@ -22,7 +22,6 @@ private:
 	std::vector<AudioChannelInterface*> _channels;
 	Mutex _mixer_mutex;
 public:
-	MultiChannelMixer();
 	virtual ~MultiChannelMixer();
 
 public: //AudioMixerInterface
