@@ -14,6 +14,7 @@ public:
 	virtual const AudioSample_t pop_front() = 0;
 	virtual const std::vector<AudioSample_t> pop_all() = 0;
 	virtual size_t size() = 0;
+	virtual void clear() = 0;
 };
 
 #endif
