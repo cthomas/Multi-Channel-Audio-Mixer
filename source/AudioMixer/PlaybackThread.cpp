@@ -52,9 +52,10 @@ void *PlaybackThread::threadMain(void *data)
 
 	if(playback)
 	{
+		AudioPlaybackInterface *playback_interface = new AlsaPlayback();
+
 		while(!playback->shutdown())
 		{
-			AudioPlaybackInterface *playback_interface = new AlsaPlayback();
 			if(playback_interface && playback->_playback_channel)
 			{
 				if(playback->_playback_channel->size() > 0)
@@ -72,6 +73,12 @@ void *PlaybackThread::threadMain(void *data)
 			}
 
 			usleep(1000*1000*1);
+		}
+
+		if(playback_interface)
+		{
+			delete playback_interface;
+			playback_interface = NULL;
 		}
 	}
 
