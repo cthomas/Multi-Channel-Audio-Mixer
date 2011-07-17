@@ -2,11 +2,11 @@
 #define _PLAYBACK_THREAD_H_
 
 #include <pthread.h>
-#include "PlaybackInterface.h"
+#include "MultiChannelMixer.h"
 #include "Mutex.h"
 
 class PlaybackThread
-	: public PlaybackInterface
+	  : public MultiChannelMixer
 {
 private:
 	PlaybackThread();
@@ -16,8 +16,6 @@ private:
 	pthread_attr_t _attr;
 	bool _shutdown;
 	Mutex _mutex;
-	PlaybackInterface::PLAYBACK_INTERFACE_STATUS _playback_status;
-	AudioChannelInterface *_playback_channel;
 
 	void signalShutdown();
 	bool shutdown();
@@ -27,11 +25,6 @@ public:
 	~PlaybackThread();
 	static PlaybackThread *startPlaybackThread();
 	void stopPlaybackThread();
-
-public: //PlaybackInterface
-	void setPlaybackChannel(AudioChannelInterface *channel);
-	const PLAYBACK_INTERFACE_STATUS getStatus();
-
 };
 
 #endif

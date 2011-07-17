@@ -49,7 +49,9 @@ common_src = [
 
 audio_mixer_src = [
 	'AlsaAudioPlayback.cpp',
+	'BasicAudioChannel.cpp',
 	'audio_mixer.cpp',
+	'MultiChannelMixer.cpp',
 	'PlaybackThread.cpp'
 ]
 

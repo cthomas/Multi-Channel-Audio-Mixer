@@ -8,8 +8,6 @@
 
 PlaybackThread::PlaybackThread()
 {
-	_playback_status = PlaybackInterface::IDLE;
-	_playback_channel = NULL;
 	_shutdown = false;
 	pthread_attr_init(&_attr);
 	pthread_attr_setdetachstate(&_attr, PTHREAD_CREATE_JOINABLE);
@@ -56,23 +54,24 @@ void *PlaybackThread::threadMain(void *data)
 
 		while(!playback->shutdown())
 		{
-			if(playback_interface && playback->_playback_channel)
+			//Pump the mixer
+			playback->mixDown();
+
+			std::vector<AudioSample_t> samples = playback->pop_all();
+
+			if(samples.size() > 0)
 			{
-				if(playback->_playback_channel->size() > 0)
-				{
-					std::vector<AudioSample_t> samples = playback->_playback_channel->pop_all();
-
-					if(samples.size())
-					{
-						TRACE("Playing audio from channel...\n");
-//						playback_interface->playAudio(samples, samples.size());
-					}
-				}
-
+				TRACE("Playing audio from channel...\n");
+				playback_interface->playAudio(samples);
 				TRACEF("Num Audio Samples Played [%zu]\n", playback_interface->getNumSamplesPlayed());
+
 			}
 
-			usleep(1000*1000*1);
+			if(playback->size() == 0)
+			{
+				TRACE("Sleeping because no samples to play...\n");
+				usleep(1000*1000*1);
+			}
 		}
 
 		if(playback_interface)
@@ -105,26 +104,4 @@ bool PlaybackThread::shutdown()
 	}
 
 	return ret;
-}
-
-void PlaybackThread::setPlaybackChannel(AudioChannelInterface *channel)
-{
-	if(_mutex.lock())
-	{
-		_playback_channel = channel;
-		_mutex.unlock();
-	}
-}
-
-const PlaybackInterface::PLAYBACK_INTERFACE_STATUS PlaybackThread::getStatus()
-{
-	PlaybackInterface::PLAYBACK_INTERFACE_STATUS stat = PlaybackInterface::IDLE;
-
-	if(_mutex.lock())
-	{
-		stat = _playback_status;
-		_mutex.unlock();
-	}
-
-	return stat;
 }
