@@ -1,0 +1,72 @@
+#!/bin/sh
+rm -f *.gcno *.gcda *.o runner* *.gcov TEST-*.xml
+
+if [ -z "${CXX_WORLD}" ]
+then
+	CXX_WORLD=BasicAudioChannel_test
+fi
+
+if [ -z "${CXX_OUTPUT}" ]
+then
+	CXX_OUTPUT=--error-printer
+fi
+
+EXTRA_CXXFLAGS="-D CXX_TESTING -D_CXX_TEST_"
+if [ -n "${RUN_QUIET}" ]
+then
+	EXTRA_CXXFLAGS="${EXTRA_CXXFLAGS} -D DEBUG_MESSAGES_OFF"
+	NO_GCOV=1
+	echo "Quiet down things"
+fi
+
+if [ -z "${NO_GCOV}" ]
+then
+	GCOV_FLAGS="-fprofile-arcs -ftest-coverage -ggdb3"
+fi
+
+echo -n "$CXX_WORLD: "
+
+../cxxtest/python/scripts/cxxtestgen --have-std ${CXX_OUTPUT} -w ${CXX_WORLD} check_*.h -o runner.cpp
+
+g++ ${GCOV_FLAGS} -Wall runner.cpp -o runner -I ../cxxtest \
+		../../source/AudioMixer/BasicAudioChannel.cpp \
+		../../source/Common/Mutex.cpp \
+		-I ../../include \
+		-I ../../source/AudioMixer \
+		-I ../../source/Common \
+		-I ./ \
+		-I /usr/include \
+		-I /usr/include/glib-2.0 \
+		-I /usr/lib/glib-2.0/include \
+		-l asound \
+		-l glib-2.0 \
+		-l rt \
+		-l z \
+		${EXTRA_CXXFLAGS}
+
+if [ -x ./runner ]
+then
+	if [ -n "`which valgrind`" ] && [ "${VALGRIND_STATUS}" != "off" ]
+	then
+		valgrind --leak-check=full -q --num-callers=40 ./runner
+		retcode=$?
+	else
+		echo "Valgrind is currently off"
+       	./runner
+       	retcode=$?
+	fi
+
+	if [ -z "${NO_GCOV}" ]
+	then
+	gcov \
+		../../source/AudioMixer/BasicAudioChannel.cpp \
+		| grep -A1 "\.c" | grep -v "^$"
+	fi
+
+else
+	retcode=5
+fi
+
+
+exit $retcode
+
