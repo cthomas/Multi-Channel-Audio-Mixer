@@ -1,6 +1,7 @@
 #ifndef _ALSA_PLAYBACK_H_
 #define _ALSA_PLAYBACK_H_
 
+#include <vector>
 #include "AudioPlaybackInterface.h"
 
 class AlsaPlayback : public virtual AudioPlaybackInterface
@@ -19,6 +20,7 @@ public:
 
 public: //AudioPlaybackInterface
 	/** @brief Interface that will play back the audio data in \asamples */
+	virtual void playAudio(const std::vector<AudioSample_t> & samples);
 	virtual void playAudio(const AudioSample_t *samples, const size_t num_samples);
 	virtual void setVolume(const size_t new_volume);
 	virtual size_t getVolume() const;

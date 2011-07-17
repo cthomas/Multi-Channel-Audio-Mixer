@@ -34,6 +34,14 @@ AlsaPlayback::~AlsaPlayback()
 	snd_config_update_free_global();
 }
 
+void AlsaPlayback::playAudio(const std::vector<AudioSample_t> & samples)
+{
+	if(samples.size() > 0)
+	{
+		playAudio(&samples[0], samples.size());
+	}
+}
+
 void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samples)
 {
 	if(samples && (num_samples > 0) && alsa_handle)

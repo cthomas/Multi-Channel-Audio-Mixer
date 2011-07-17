@@ -13,6 +13,7 @@ public:
 	virtual ~AudioPlaybackInterface() {};
 
 	/** @brief Interface that will play back the audio data in \asamples */
+	virtual void playAudio(const std::vector<AudioSample_t> & samples) = 0;
 	virtual void playAudio(const AudioSample_t *samples, const size_t num_samples) = 0;
 	virtual void setVolume(const size_t new_volume) = 0;
 	virtual size_t getVolume() const = 0;
