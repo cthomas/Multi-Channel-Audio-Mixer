@@ -12,3 +12,4 @@ test/*/*.gcda
 test/*/*.gcno
 test/*/*.gcov
 test/*/runner*
+test/*/.kdbgrc*
