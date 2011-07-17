@@ -1,15 +1,14 @@
 
 #include <unistd.h>
 
-//TODO Replace this with the actual mixer
-#include "AudioMixerInterface.h"
 #include "DebugMessage.h"
+#include "MultiChannelMixer.h"
 #include "PlaybackThread.h"
 
 int main(void)
 {
 	PlaybackThread *playback = PlaybackThread::startPlaybackThread();
-	AudioMixerInterface *mixer = NULL;
+	MultiChannelMixer *mixer = NULL;
 
 	if(playback)
 	{
