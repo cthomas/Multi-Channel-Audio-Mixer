@@ -3,12 +3,15 @@
 
 #include <string.h>
 
+class AudioChannelInterface;
+
 class AudioMixerInterface
 {
 public:
+	virtual void mixDown() = 0;
 	virtual void addChannel(AudioChannelInterface *channel) = 0;
 	virtual void removeChannel(AudioChannelInterface *channel) = 0;
-	virtual size_t numChannels() const = 0;
+	virtual size_t numChannels() = 0;
 };
 
 #endif
