@@ -63,6 +63,8 @@ The following variables can be passed to scons to modify the build:
 
 (variable name)		(parameters)
 ===============		============
+debug			1
+			0 (default)
 output			verbose
 			quiet (default)
 	""")
@@ -81,13 +83,18 @@ options_dict = {
 			'linker' : ["Linking $TARGET                       "]
 			}
 		},
+	'debug' : {
+		'1' : ['-ggdb3'],
+		'0' : ['']
+		}
 	}
 
 #***************************************************************************************#
 # contains a set of default options to use for a build					#
 #***************************************************************************************#
 default_options_dict = {
-		'output' : options_dict['output']['quiet']
+		'output' : options_dict['output']['quiet'],
+		'debug' : options_dict['debug']['0']
 	}
 
 #****************************************************************************************#
@@ -102,6 +109,10 @@ if '-h' not in sys.argv:
 	if 'verbose' == ARGUMENTS.get('output', 'quiet'):
 		print '+Configuring verbose output...'
 		build_options_dict['output'] = options_dict['output']['verbose']
+
+	if '1' == ARGUMENTS.get('debug', '0'):
+		print '+Configuring debug symbols...'
+		build_options_dict['debug'] = options_dict['debug']['1']
 
 	common_object_root_src = []
 	for f in common_src:
@@ -119,6 +130,8 @@ if '-h' not in sys.argv:
 		LINKCOMSTR= build_options_dict['output']['linker'],
 		CCCOMSTR =  build_options_dict['output']['compiler'],
 		CXXCOMSTR = build_options_dict['output']['compiler'],
+		CCFLAGS = build_options_dict['debug'],
+		CXXFLAGS = build_options_dict['debug'],
 		CPPPATH = inc_roots,
 		ENV = os.environ)
 
