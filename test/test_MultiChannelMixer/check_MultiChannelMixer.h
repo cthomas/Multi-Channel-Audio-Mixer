@@ -284,7 +284,75 @@ public:
 
 		TS_ASSERT_EQUALS(samples.size(), max_size);
 	}
+
+	void test_add_many_channels_all_different_lengths_mix_down_outputs_a_channel_that_is_mixed_correctly()
+	{
+		BasicAudioChannel channel1;
+		BasicAudioChannel channel2;
+		BasicAudioChannel channel3;
+		BasicAudioChannel channel4;
+
+		mixer.addChannel(&channel);
+		mixer.addChannel(&channel1);
+		mixer.addChannel(&channel2);
+		mixer.addChannel(&channel3);
+		mixer.addChannel(&channel4);
+
+		channel.push_back(4);
+		channel1.push_back(4);
+		channel2.push_back(4);
+		channel3.push_back(4);
+		channel4.push_back(4);
+
+		channel1.push_back(3);
+		channel2.push_back(3);
+		channel3.push_back(3);
+		channel4.push_back(3);
+
+		channel2.push_back(1);
+		channel3.push_back(2);
+		channel4.push_back(2);
+
+		channel3.push_back(1);
+		channel4.push_back(1);
+
+		channel3.push_back(4);
+		channel4.push_back(4);
+
+		channel3.push_back(3);
+		channel4.push_back(3);
+
+		channel3.push_back(2);
+		channel4.push_back(2);
+
+		channel3.push_back(1);
+		channel4.push_back(1);
+
+		channel4.push_back(4);
+
+		channel4.push_back(3);
+
+		channel4.push_back(2);
+
+		channel4.push_back(1);
+
+		mixer.mixDown();
+
+		std::vector<AudioSample_t> samples = mixer.pop_all();
+
+		TS_ASSERT_EQUALS(20, samples[0]);
+		TS_ASSERT_EQUALS(12, samples[1]);
+		TS_ASSERT_EQUALS(5, samples[2]);
+		TS_ASSERT_EQUALS(2, samples[3]);
+		TS_ASSERT_EQUALS(8, samples[4]);
+		TS_ASSERT_EQUALS(6, samples[5]);
+		TS_ASSERT_EQUALS(4, samples[6]);
+		TS_ASSERT_EQUALS(2, samples[7]);
+		TS_ASSERT_EQUALS(4, samples[8]);
+		TS_ASSERT_EQUALS(3, samples[9]);
+		TS_ASSERT_EQUALS(2, samples[10]);
+		TS_ASSERT_EQUALS(1, samples[11]);
+	}
 };
 
 #endif
-
