@@ -29,7 +29,9 @@ echo -n "$CXX_WORLD: "
 ../cxxtest/python/scripts/cxxtestgen --have-std ${CXX_OUTPUT} -w ${CXX_WORLD} check_*.h -o runner.cpp
 
 g++ ${GCOV_FLAGS} -Wall runner.cpp -o runner -I ../cxxtest \
+		../../source/AudioMixer/BasicAudioChannel.cpp \
 		../../source/AudioMixer/MultiChannelMixer.cpp \
+		../../source/Common/Mutex.cpp \
 		-I ../../include \
 		-I ../../source/AudioMixer \
 		-I ./ \
@@ -42,28 +44,29 @@ g++ ${GCOV_FLAGS} -Wall runner.cpp -o runner -I ../cxxtest \
 		-l z \
 		${EXTRA_CXXFLAGS}
 
-#if [ -x ./runner ]
-#then
-#	if [ -n "`which valgrind`" ] && [ "${VALGRIND_STATUS}" != "off" ]
-#	then
-#		valgrind --leak-check=full -q --num-callers=40 ./runner
-#		retcode=$?
-#	else
-#		echo "Valgrind is currently off"
-		./runner
+if [ -x ./runner ]
+then
+	if [ -n "`which valgrind`" ] && [ "${VALGRIND_STATUS}" != "off" ]
+	then
+		valgrind --leak-check=full -q --num-callers=40 ./runner
 		retcode=$?
-#	fi
-#
-#	if [ -z "${NO_GCOV}" ]
-#	then
-#	gcov \
-#		../source/template.cpp \
-#		| grep -A1 "\.c" | grep -v "^$"
-#	fi
-#
-#else
-#	retcode=5
-#fi
+	else
+		echo "Valgrind is currently off"
+       	./runner
+       	retcode=$?
+	fi
+
+	if [ -z "${NO_GCOV}" ]
+	then
+	gcov \
+		../../source/AudioMixer/BasicAudioChannel.cpp \
+		../../source/AudioMixer/MultiChannelMixer.cpp \
+		| grep -A1 "\.c" | grep -v "^$"
+	fi
+
+else
+	retcode=5
+fi
 
 
 exit $retcode
