@@ -125,7 +125,11 @@ void MultiChannelMixer::waitData()
 	{
 		if(_sample_queue.size() == 0)
 		{
-			pthread_cond_wait(&_mixer_cond, _channel_mutex.getMutex());
+			struct timespec timeout = {0};
+
+			clock_gettime(CLOCK_REALTIME, &timeout);
+			timeout.tv_sec += 3;
+			pthread_cond_timedwait(&_mixer_cond, _channel_mutex.getMutex(), &timeout);
 		}
 		externalUnlock();
 	}
