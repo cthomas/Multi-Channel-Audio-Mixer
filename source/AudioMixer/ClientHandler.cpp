@@ -41,6 +41,7 @@ void *ClientHandler::threadMain(void *data)
 
 	if(handler)
 	{
+		handler->setThreadIdentifier("ClientHandler");
 		while(!handler->shutdown())
 		{
 			usleep(1000*1000*1);

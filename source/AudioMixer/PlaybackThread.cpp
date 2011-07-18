@@ -32,6 +32,7 @@ void *PlaybackThread::threadMain(void *data)
 
 	if(playback)
 	{
+		playback->setThreadIdentifier("Playback");
 		AudioPlaybackInterface *playback_interface = new AlsaPlayback();
 
 		while(!playback->shutdown())
