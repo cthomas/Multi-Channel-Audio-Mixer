@@ -44,12 +44,14 @@ mixer_program_name = 'audio_mixing_server'
 # The source files that we want to use for the build					#
 #***************************************************************************************#
 common_src = [
-	'Mutex.cpp'
+	'BasicThread.cpp',
+	'Mutex.cpp',
 ]
 
 audio_mixer_src = [
 	'AlsaAudioPlayback.cpp',
 	'BasicAudioChannel.cpp',
+	'ClientHandler.cpp',
 	'audio_mixer.cpp',
 	'MultiChannelMixer.cpp',
 	'PlaybackThread.cpp'

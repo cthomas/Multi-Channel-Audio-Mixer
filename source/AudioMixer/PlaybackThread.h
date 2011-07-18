@@ -1,30 +1,20 @@
 #ifndef _PLAYBACK_THREAD_H_
 #define _PLAYBACK_THREAD_H_
 
-#include <pthread.h>
+#include "BasicThread.h"
 #include "MultiChannelMixer.h"
-#include "Mutex.h"
 
 class PlaybackThread
-	  : public MultiChannelMixer
+	  : public MultiChannelMixer,
+		public BasicThread
 {
 private:
 	PlaybackThread();
-
-	pthread_t _pthread;
-	unsigned int _thread_id;
-	pthread_attr_t _attr;
-	bool _shutdown;
-	Mutex _mutex;
-
-	void signalShutdown();
-	bool shutdown();
 	static void *threadMain(void *data);
 
 public:
-	~PlaybackThread();
+	virtual ~PlaybackThread();
 	static PlaybackThread *startPlaybackThread();
-	void stopPlaybackThread();
 };
 
 #endif
