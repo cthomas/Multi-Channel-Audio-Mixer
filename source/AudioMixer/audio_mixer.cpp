@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <signal.h>
 #include <unistd.h>
 
@@ -14,6 +15,13 @@ static bool app_signaled = false;
 void sig_handler(int num)
 {
 	TRACEF("Received signal [%d]\n", num);
+
+	if(app_signaled)
+	{
+		TRACE("App signaled multiple times..exiting\n");
+		exit(1);
+	}
+
 	app_signaled = true;
 }
 
@@ -35,21 +43,26 @@ int main(void)
 	while(1)
 	{
 		if(!app_signaled)
+		{
 			usleep(1000*1000*1);
+		}
 		else
+		{
+			TRACE("App got signaled...going down!\n");
 			break;
-	}
-
-	if(playback)
-	{
-		delete playback;
-		playback = NULL;
+		}
 	}
 
 	if(client_handler)
 	{
 		delete client_handler;
 		client_handler = NULL;
+	}
+
+	if(playback)
+	{
+		delete playback;
+		playback = NULL;
 	}
 
 	return 0;
