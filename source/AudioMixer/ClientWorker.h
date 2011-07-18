@@ -13,9 +13,10 @@ private:
 	bool _file_playback;
 	std::string _fake_file;
 	ClientWorker();
+	pthread_cond_t _worker_cond;
 
 	static void *threadMain(void *data);
-	void signalFilePlayback();
+	void playFile();
 public:
 	~ClientWorker();
 	static ClientWorker *startClientWorker();
