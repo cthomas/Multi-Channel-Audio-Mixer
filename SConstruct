@@ -52,6 +52,7 @@ audio_mixer_src = [
 	'AlsaAudioPlayback.cpp',
 	'BasicAudioChannel.cpp',
 	'ClientHandler.cpp',
+	'ClientWorker.cpp',
 	'audio_mixer.cpp',
 	'MultiChannelMixer.cpp',
 	'PlaybackThread.cpp'
