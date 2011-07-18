@@ -20,3 +20,9 @@ bool Mutex::unlock()
 {
 	return (0 == pthread_mutex_unlock(&_mutex));
 }
+
+pthread_mutex_t *Mutex::getMutex()
+{
+	return &_mutex;
+}
+

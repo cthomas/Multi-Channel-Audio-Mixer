@@ -13,6 +13,7 @@ public:
 
 	bool lock();
 	bool unlock();
+	pthread_mutex_t *getMutex();
 };
 
 #endif
