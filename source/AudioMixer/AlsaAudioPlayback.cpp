@@ -8,7 +8,9 @@
 
 unsigned long AlsaPlayback::_volume = 25;
 unsigned int AlsaPlayback::_sample_rate = 22050;
+//unsigned int AlsaPlayback::_sample_rate = 44100;
 static snd_pcm_t *alsa_handle = NULL;
+static snd_pcm_uframes_t frames = {0};
 
 AlsaPlayback::AlsaPlayback()
 {
@@ -18,33 +20,10 @@ AlsaPlayback::AlsaPlayback()
 
 	if(snd_pcm_open(&alsa_handle, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0)
 	{
-		TRACE("Unable to open playback device!!");
+		TRACE("Unable to open playback device!!\n");
 		alsa_handle = NULL;
 	}
-}
-
-AlsaPlayback::~AlsaPlayback()
-{
-	if(alsa_handle)
-	{
-		snd_pcm_close(alsa_handle);
-		alsa_handle = NULL;
-	}
-
-	snd_config_update_free_global();
-}
-
-void AlsaPlayback::playAudio(const std::vector<AudioSample_t> & samples)
-{
-	if(samples.size() > 0)
-	{
-		playAudio(&samples[0], samples.size());
-	}
-}
-
-void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samples)
-{
-	if(samples && (num_samples > 0) && alsa_handle)
+	else
 	{
 		int rc = -1;
 		snd_pcm_hw_params_t *params = NULL;
@@ -54,7 +33,6 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 
 		if(NULL != params)
 		{
-			snd_pcm_uframes_t frames = {0};
 			int dir = 0;
 
 			/* Fill it in with default values. */
@@ -82,55 +60,13 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 
 			if(rc >= 0)
 			{
-				bool error_cond = false;
-				size_t frames_sent = 0;
-				size_t pad_out = num_samples % AlsaPlayback::FRAME_PERIOD;
-				size_t frames_to_send = num_samples + pad_out;
-
-				AudioSample_t *send_samples = new AudioSample_t[frames_to_send];
-
-				if(send_samples)
-				{
-					memset(send_samples, 0, sizeof(AudioSample_t)*frames_to_send);
-					memcpy(send_samples, samples, sizeof(AudioSample_t)*num_samples);
-
-					for(frames_sent = 0, error_cond = false; (frames_sent < frames_to_send) && !error_cond; frames_sent += (size_t)frames)
-					{
-						if(0 != AlsaPlayback::_volume)
-						{
-
-							rc = snd_pcm_writei(alsa_handle, &(send_samples[frames_sent]), frames);
-
-							if(-EPIPE == rc)
-							{
-								TRACE("playAudio() - underrun occurred in snd_pcm_writei()");
-								snd_pcm_prepare(alsa_handle);
-							}
-							else if(rc < 0)
-							{
-								TRACE("playAudio() - error occurred in snd_pcm_writei()");
-								error_cond = true;
-							}
-							else if(rc != (int)frames)
-							{
-								TRACE("playAudio() - short write occurred in snd_pcm_writei()");
-							}
-							else
-							{
-								_num_samples_played += rc;
-							}
-						}
-					}
-
-					rc = snd_pcm_drain(alsa_handle);
-
-					delete[] send_samples;
-					send_samples = NULL;
-				}
+				TRACE("AlsaPlayback init completed successfully..\n");
 			}
 			else
 			{
-				TRACE("playAudio() - snd_pcm_hw_params() failed");
+				snd_pcm_close(alsa_handle);
+				alsa_handle = NULL;
+				TRACE("AlsaPlayback init failed\n");
 			}
 
 			snd_pcm_hw_params_free(params);
@@ -138,7 +74,79 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 		}
 		else
 		{
-			TRACE("playAudio - snd_pcm_hw_params_alloc() failed");
+			TRACE("playAudio - snd_pcm_hw_params_alloc() failed\n");
+		}
+	}
+}
+
+AlsaPlayback::~AlsaPlayback()
+{
+	if(alsa_handle)
+	{
+		snd_pcm_close(alsa_handle);
+		alsa_handle = NULL;
+	}
+
+	snd_config_update_free_global();
+}
+
+void AlsaPlayback::playAudio(const std::vector<AudioSample_t> & samples)
+{
+	if(samples.size() > 0)
+	{
+		playAudio(&samples[0], samples.size());
+	}
+}
+
+void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samples)
+{
+	if(samples && (num_samples > 0) && alsa_handle)
+	{
+		bool error_cond = false;
+		size_t frames_sent = 0;
+		size_t pad_out = num_samples % AlsaPlayback::FRAME_PERIOD;
+		size_t frames_to_send = num_samples + pad_out;
+
+		AudioSample_t *send_samples = new AudioSample_t[frames_to_send];
+
+		if(send_samples)
+		{
+			int rc = 0;
+
+			memset(send_samples, 0, sizeof(AudioSample_t)*frames_to_send);
+			memcpy(send_samples, samples, sizeof(AudioSample_t)*num_samples);
+
+			for(frames_sent = 0, error_cond = false; (frames_sent < frames_to_send) && !error_cond; frames_sent += (size_t)frames)
+			{
+				if(0 != AlsaPlayback::_volume)
+				{
+					rc = snd_pcm_writei(alsa_handle, &(send_samples[frames_sent]), frames);
+
+					if(-EPIPE == rc)
+					{
+						TRACE("playAudio() - underrun occurred in snd_pcm_writei()\n");
+						snd_pcm_prepare(alsa_handle);
+					}
+					else if(rc < 0)
+					{
+						TRACE("playAudio() - error occurred in snd_pcm_writei()\n");
+						error_cond = true;
+					}
+					else if(rc != (int)frames)
+					{
+						TRACE("playAudio() - short write occurred in snd_pcm_writei()\n");
+					}
+					else
+					{
+						_num_samples_played += rc;
+					}
+				}
+			}
+
+			rc = snd_pcm_drain(alsa_handle);
+
+			delete[] send_samples;
+			send_samples = NULL;
 		}
 	}
 }
@@ -168,7 +176,7 @@ void AlsaPlayback::startRecording()
 	if(!_recording_path.empty())
 		_recording = true;
 	else
-		TRACE("Unable to start recording...path not set");
+		TRACE("Unable to start recording...path not set\n");
 }
 
 void AlsaPlayback::stopRecording()
