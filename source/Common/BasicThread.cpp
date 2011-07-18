@@ -11,11 +11,11 @@ BasicThread::BasicThread(size_t stack_size)
 
 BasicThread::~BasicThread()
 {
-	TRACEF("Thread [%s] shutting down...\n", _thread_str.c_str());
+	printf("Thread [%s] shutting down...\n", _thread_str.c_str());
 	signalShutdown();
 	pthread_join(_pthread, NULL);
 
-	TRACEF("Thread [%s] shutting down...COMPLETE\n", _thread_str.c_str());
+	printf("Thread [%s] shutting down...COMPLETE\n", _thread_str.c_str());
 	pthread_attr_destroy(&_attr);
 }
 
