@@ -18,6 +18,28 @@ AlsaPlayback::AlsaPlayback()
 	_recording = false;
 	alsa_handle = NULL;
 
+	AlsaPlayback::setupHandle();
+}
+
+AlsaPlayback::~AlsaPlayback()
+{
+	if(alsa_handle)
+	{
+		snd_pcm_close(alsa_handle);
+		alsa_handle = NULL;
+	}
+
+	snd_config_update_free_global();
+}
+
+void AlsaPlayback::setupHandle()
+{
+	if(alsa_handle)
+	{
+		snd_pcm_close(alsa_handle);
+		alsa_handle = NULL;
+	}
+
 	if(snd_pcm_open(&alsa_handle, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0)
 	{
 		TRACE("Unable to open playback device!!\n");
@@ -79,17 +101,6 @@ AlsaPlayback::AlsaPlayback()
 	}
 }
 
-AlsaPlayback::~AlsaPlayback()
-{
-	if(alsa_handle)
-	{
-		snd_pcm_close(alsa_handle);
-		alsa_handle = NULL;
-	}
-
-	snd_config_update_free_global();
-}
-
 void AlsaPlayback::playAudio(const std::vector<AudioSample_t> & samples)
 {
 	if(samples.size() > 0)
@@ -127,9 +138,18 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 						TRACE("playAudio() - underrun occurred in snd_pcm_writei()\n");
 						snd_pcm_prepare(alsa_handle);
 					}
+					else if(-EBADFD == rc)
+					{
+						TRACE("playAudio() - PCM is not in the right state\n");
+						AlsaPlayback::setupHandle();
+					}
+					else if (-ESTRPIPE == rc)
+					{
+						TRACE("playAudio() - stream is suspended, attempting recovery\n");
+					}
 					else if(rc < 0)
 					{
-						TRACE("playAudio() - error occurred in snd_pcm_writei()\n");
+						TRACEF("playAudio() - error occurred in snd_pcm_writei() [%d]\n", rc);
 						error_cond = true;
 					}
 					else if(rc != (int)frames)

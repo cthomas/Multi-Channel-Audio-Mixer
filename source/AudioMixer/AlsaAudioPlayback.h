@@ -12,6 +12,8 @@ private:
 	size_t _num_samples_played;
 	std::string _recording_path;
 	bool _recording;
+
+	void setupHandle();
 public:
 	AlsaPlayback();
 	virtual ~AlsaPlayback();
