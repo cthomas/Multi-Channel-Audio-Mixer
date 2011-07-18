@@ -59,6 +59,8 @@ int main(void)
 
 			size_t samples_to_push = 11264;
 
+			TRACE("Sleeping before we start streaming...\n");
+			usleep(1000*1000*10);
 			for(size_t i = 0; i < data_size/sizeof(AudioSample_t) && !app_signaled;)
 			{
 				size_t actual_samples_pushed = (i + samples_to_push < data_size/sizeof(AudioSample_t)) ? samples_to_push : data_size/sizeof(AudioSample_t)-i;
