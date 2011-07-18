@@ -11,7 +11,7 @@ protected:
 	unsigned int _thread_id;
 	pthread_attr_t _attr;
 	bool _shutdown;
-	Mutex _mutex;
+	Mutex _thread_mutex;
 
 	virtual void signalShutdown();
 	virtual bool shutdown();

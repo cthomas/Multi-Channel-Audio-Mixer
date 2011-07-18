@@ -33,10 +33,10 @@ bool BasicThread::start(void *(*thread_main)(void*), void *data)
 
 void BasicThread::signalShutdown()
 {
-	if(_mutex.lock())
+	if(_thread_mutex.lock())
 	{
 		_shutdown = true;
-		_mutex.unlock();
+		_thread_mutex.unlock();
 	}
 }
 
@@ -44,10 +44,10 @@ bool BasicThread::shutdown()
 {
 	bool ret = false;
 
-	if(_mutex.lock())
+	if(_thread_mutex.lock())
 	{
 		ret = _shutdown;
-		_mutex.unlock();
+		_thread_mutex.unlock();
 	}
 
 	return ret;
