@@ -163,7 +163,7 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 				}
 			}
 
-			rc = snd_pcm_drain(alsa_handle);
+//			rc = snd_pcm_drain(alsa_handle);
 
 			delete[] send_samples;
 			send_samples = NULL;
