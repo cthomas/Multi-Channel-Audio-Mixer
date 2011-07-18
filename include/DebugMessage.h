@@ -7,7 +7,7 @@ extern "C"
 {
 #endif	//__cplusplus
 
-#ifndef _CXX_TEST_
+#if !defined _CXX_TEST_ && defined DEBUG_ON
 #	define TRACEF(x, ...) printf(x, __VA_ARGS__);
 #	define TRACE(s) printf(s);
 #else

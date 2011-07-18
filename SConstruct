@@ -89,7 +89,7 @@ options_dict = {
 			}
 		},
 	'debug' : {
-		'1' : ['-ggdb3'],
+		'1' : ['-ggdb3', '-DDEBUG_ON'],
 		'0' : ['']
 		}
 	}
