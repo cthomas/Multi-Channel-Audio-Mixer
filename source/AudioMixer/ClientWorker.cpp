@@ -6,7 +6,10 @@
 
 ClientWorker::ClientWorker()
 	: BasicThread(1024*128)
-{}
+{
+	_file_playback = false;
+	_fake_file.clear();
+}
 
 ClientWorker::~ClientWorker()
 {
@@ -21,6 +24,14 @@ void *ClientWorker::threadMain(void *data)
 	{
 		while(!worker->shutdown())
 		{
+			if(worker->_thread_mutex.lock())
+			{
+				if(!worker->_fake_file.empty())
+				{
+					
+				}
+				worker->_thread_mutex.unlock();
+			}
 			usleep(1000*1000*1);
 		}
 	}
@@ -39,3 +50,14 @@ ClientWorker *ClientWorker::startClientWorker()
 
 	return worker;
 }
+
+void ClientWorker::startPlaybackFile(const std::string & filepath)
+{
+	if(_thread_mutex.lock())
+	{
+		_fake_file = filepath;
+		//signalFilePlayback();
+		_thread_mutex.unlock();
+	}
+}
+
