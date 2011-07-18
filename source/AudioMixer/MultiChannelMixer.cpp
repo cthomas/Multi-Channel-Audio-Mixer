@@ -4,18 +4,32 @@
 
 bool ExternalLockingAudioChannel::externalLock()
 {
-	return _mutex.lock();
+	return _channel_mutex.lock();
 }
 
 bool ExternalLockingAudioChannel::externalUnlock()
 {
-	return _mutex.unlock();
+	return _channel_mutex.unlock();
+}
+
+MultiChannelMixer::MultiChannelMixer()
+{
+	pthread_cond_init(&_mixer_cond, NULL);
 }
 
 MultiChannelMixer::~MultiChannelMixer()
 {
 	//Drop any channels we have
+	std::vector<AudioChannelInterface*>::iterator itt = _channels.begin();
+	for(; itt != _channels.end(); ++itt)
+	{
+		if((*itt))
+		{
+			(*itt)->setConditionToSignal(NULL);
+		}
+	}
 	_channels.clear();
+	pthread_cond_destroy(&_mixer_cond);
 }
 
 void MultiChannelMixer::mixDown()
@@ -63,6 +77,7 @@ void MultiChannelMixer::addChannel(AudioChannelInterface *channel)
 		{
 			if(std::find(_channels.begin(), _channels.end(), channel) == _channels.end())
 			{
+				channel->setConditionToSignal(&_mixer_cond);
 				_channels.push_back(channel);
 			}
 
@@ -81,6 +96,8 @@ void MultiChannelMixer::removeChannel(AudioChannelInterface *channel)
 
 			if(itt != _channels.end())
 			{
+				if((*itt))
+					(*itt)->setConditionToSignal(NULL);
 				_channels.erase(itt);
 			}
 
@@ -102,3 +119,14 @@ size_t MultiChannelMixer::numChannels()
 	return num_channels;
 }
 
+void MultiChannelMixer::waitData()
+{
+	if(externalLock())
+	{
+		if(_sample_queue.size() == 0)
+		{
+			pthread_cond_wait(&_mixer_cond, _channel_mutex.getMutex());
+		}
+		externalUnlock();
+	}
+}

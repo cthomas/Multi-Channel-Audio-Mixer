@@ -48,6 +48,8 @@ void *PlaybackThread::threadMain(void *data)
 				TRACEF("Num Audio Samples Played [%zu]\n", playback_interface->getNumSamplesPlayed());
 
 			}
+
+			playback->waitData();
 		}
 
 		if(playback_interface)

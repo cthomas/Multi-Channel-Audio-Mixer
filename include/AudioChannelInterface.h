@@ -1,6 +1,7 @@
 #ifndef _AUDIO_CHANNEL_INTERFACE_H_
 #define _AUDIO_CHANNEL_INTERFACE_H_
 
+#include <pthread.h>
 #include <vector>
 
 #include "AudioSample.h"
@@ -15,6 +16,7 @@ public:
 	virtual const std::vector<AudioSample_t> pop_all() = 0;
 	virtual size_t size() = 0;
 	virtual void clear() = 0;
+	virtual void setConditionToSignal(pthread_cond_t *cond) = 0;
 };
 
 #endif
