@@ -63,37 +63,29 @@ void *ClientHandler::threadMain(void *data)
 	if(handler)
 	{
 		handler->setThreadIdentifier("ClientHandler");
+
+		ClientWorker *worker1 = ClientWorker::startClientWorker();
+		ClientWorker *worker2 = ClientWorker::startClientWorker();
+		handler->_workers.push_back(worker1);
+		handler->_workers.push_back(worker2);
+		handler->_mixer->addChannel(worker1);
+		handler->_mixer->addChannel(worker2);
+
 		size_t sleep_time_secs = 0;
 		while(!handler->shutdown())
 		{
 			if(sleep_time_secs == 5)
 			{
-				ClientWorker *worker = ClientWorker::startClientWorker();
-
-				if(worker)
+				if(worker1)
 				{
-					if(handler->_mixer)
-					{
-						handler->_mixer->addChannel(worker);
-						worker->startPlaybackFile(PLAYBACK_FILE);
-					}
-
-					handler->_workers.push_back(worker);
+					worker1->startPlaybackFile(PLAYBACK_FILE);
 				}
 			}
 			else if(sleep_time_secs == 10)
 			{
-				ClientWorker *worker = ClientWorker::startClientWorker();
-
-				if(worker)
+				if(worker2)
 				{
-					if(handler->_mixer)
-					{
-						handler->_mixer->addChannel(worker);
-						worker->startPlaybackFile(VOICEOVER_FILE);
-					}
-
-					handler->_workers.push_back(worker);
+					worker2->startPlaybackFile(VOICEOVER_FILE);
 				}
 			}
 			sleep_time_secs += 1;
