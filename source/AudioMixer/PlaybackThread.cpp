@@ -66,12 +66,6 @@ void *PlaybackThread::threadMain(void *data)
 				TRACEF("Num Audio Samples Played [%zu]\n", playback_interface->getNumSamplesPlayed());
 
 			}
-
-			if(playback->size() == 0)
-			{
-				TRACE("Sleeping because no samples to play...\n");
-				usleep(1000*1000*1);
-			}
 		}
 
 		if(playback_interface)
