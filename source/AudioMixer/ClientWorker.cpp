@@ -14,7 +14,11 @@ ClientWorker::ClientWorker()
 
 ClientWorker::~ClientWorker()
 {
-	pthread_cond_signal(&_worker_cond);
+	if(_thread_mutex.lock())
+	{
+		pthread_cond_signal(&_worker_cond);
+		_thread_mutex.unlock();
+	}
 	pthread_cond_destroy(&_worker_cond);
 }
 
@@ -24,6 +28,7 @@ void *ClientWorker::threadMain(void *data)
 
 	if(worker)
 	{
+		worker->setThreadIdentifier("ClientWorker");
 		while(!worker->shutdown())
 		{
 			if(worker->_thread_mutex.lock())
@@ -37,7 +42,10 @@ void *ClientWorker::threadMain(void *data)
 					worker->_file_playback = false;
 				}
 
-				pthread_cond_wait(&worker->_worker_cond, worker->_thread_mutex.getMutex());
+				if(!worker->_shutdown)
+				{
+					pthread_cond_wait(&worker->_worker_cond, worker->_thread_mutex.getMutex());
+				}
 				worker->_thread_mutex.unlock();
 			}
 			usleep(1000*1000*1);
@@ -99,11 +107,10 @@ void ClientWorker::playFile()
 
 			size_t samples_to_push = 11264;
 
-			for(size_t i = 0; i < data_size/sizeof(AudioSample_t) && !shutdown();)
+			for(size_t i = 0; i < data_size/sizeof(AudioSample_t) && !shutdown(); i+=samples_to_push)
 			{
 				size_t actual_samples_pushed = (i + samples_to_push < data_size/sizeof(AudioSample_t)) ? samples_to_push : data_size/sizeof(AudioSample_t)-i;
 				push_back(&samples[i], actual_samples_pushed);
-				i+=samples_to_push;
 
 				usleep(1000*500);
 			}
