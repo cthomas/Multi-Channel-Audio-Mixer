@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include "AudioMixerInterface.h"
 #include "DebugMessage.h"
+#include "PracticalSocket.h"
 
 #include "ClientWorker.h"
 
@@ -9,6 +10,7 @@ ClientWorker::ClientWorker()
 {
 	_file_playback = false;
 	_fake_file.clear();
+	_sock = NULL;
 	pthread_cond_init(&_worker_cond, NULL);
 }
 
@@ -17,6 +19,11 @@ ClientWorker::~ClientWorker()
 	if(_thread_mutex.lock())
 	{
 		pthread_cond_signal(&_worker_cond);
+		if(_sock)
+		{
+			delete _sock;
+			_sock = NULL;
+		}
 		_thread_mutex.unlock();
 	}
 	pthread_cond_destroy(&_worker_cond);
@@ -33,7 +40,11 @@ void *ClientWorker::threadMain(void *data)
 		{
 			if(worker->_thread_mutex.lock())
 			{
-				if(!worker->_fake_file.empty())
+				if(worker->_sock)
+				{
+					worker->playSock();
+				}
+				else if(!worker->_fake_file.empty())
 				{
 					worker->_file_playback = true;
 					worker->_thread_mutex.unlock();
@@ -121,3 +132,43 @@ void ClientWorker::playFile()
 	}
 }
 
+void ClientWorker::startPlaybackSock(TCPSocket *sock)
+{
+	if(_thread_mutex.lock())
+	{
+		if(sock)
+		{
+			if(_sock)
+			{
+				delete _sock;
+				_sock = NULL;
+			}
+
+			_sock = sock;
+			pthread_cond_signal(&_worker_cond);
+		}
+		_thread_mutex.unlock();
+	}
+}
+
+void ClientWorker::playSock()
+{
+	if(_sock)
+	{
+		TRACE("Playing from sock...\n");
+		AudioSample_t samples[22050] = {0};
+
+		ssize_t rc = _sock->recv(&samples, sizeof(samples));
+
+		while(rc > 0)
+		{
+			push_back(&samples[0], rc/sizeof(AudioSample_t));
+			memset(&samples[0], 0, sizeof(samples));
+
+			usleep(1000*800);
+			rc = _sock->recv(&samples[0], sizeof(samples)/sizeof(AudioSample_t));
+		}
+
+		TRACE("Working completed playback...\n");
+	}
+}

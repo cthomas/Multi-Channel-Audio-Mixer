@@ -4,6 +4,7 @@
 #include "AudioMixerInterface.h"
 #include "ClientWorker.h"
 #include "DebugMessage.h"
+#include "PracticalSocket.h"
 
 #include "ClientHandler.h"
 
@@ -14,6 +15,7 @@ ClientHandler::ClientHandler()
 	: BasicThread(1024*128)
 {
 	_mixer = NULL;
+	_listen_sock = NULL;
 }
 
 ClientHandler::~ClientHandler()
@@ -64,32 +66,73 @@ void *ClientHandler::threadMain(void *data)
 	{
 		handler->setThreadIdentifier("ClientHandler");
 
-		ClientWorker *worker1 = ClientWorker::startClientWorker();
-		ClientWorker *worker2 = ClientWorker::startClientWorker();
-		handler->_workers.push_back(worker1);
-		handler->_workers.push_back(worker2);
-		handler->_mixer->addChannel(worker1);
-		handler->_mixer->addChannel(worker2);
+		//handler->_listen_sock = new NonBlockTCPServerSocket(22000, 5);
+		handler->_listen_sock = new TCPServerSocket(22000, 5);
+
+//		ClientWorker *worker1 = ClientWorker::startClientWorker();
+//		ClientWorker *worker2 = ClientWorker::startClientWorker();
+//		handler->_workers.push_back(worker1);
+//		handler->_workers.push_back(worker2);
+//		handler->_mixer->addChannel(worker1);
+//		handler->_mixer->addChannel(worker2);
 
 		size_t sleep_time_secs = 0;
 		while(!handler->shutdown())
 		{
-			if(sleep_time_secs == 5)
+//			if(sleep_time_secs == 5)
+//			{
+//				if(worker1)
+//				{
+//					worker1->startPlaybackFile(PLAYBACK_FILE);
+//				}
+//			}
+//			else if(sleep_time_secs == 10)
+//			{
+//				if(worker2)
+//				{
+//					worker2->startPlaybackFile(VOICEOVER_FILE);
+//				}
+//			}
+
+			try
 			{
-				if(worker1)
+				if(handler->_listen_sock)
 				{
-					worker1->startPlaybackFile(PLAYBACK_FILE);
+					TCPSocket *client = handler->_listen_sock->accept();
+
+					if(client)
+					{
+						printf("New client connected...\n");
+						ClientWorker *worker = ClientWorker::startClientWorker();
+
+						if(worker)
+						{
+							worker->startPlaybackSock(client);
+							handler->_workers.push_back(worker);
+							if(handler->_mixer)
+								handler->_mixer->addChannel(worker);
+						}
+						else
+						{
+							delete client;
+							client = NULL;
+						}
+					}
 				}
 			}
-			else if(sleep_time_secs == 10)
+			catch (SocketException &e)
 			{
-				if(worker2)
-				{
-					worker2->startPlaybackFile(VOICEOVER_FILE);
-				}
+				printf("Caught exception from accept [%s]\n", e.what());
 			}
+
 			sleep_time_secs += 1;
-			usleep(1000*1000*1);
+			usleep(1000*500);
+		}
+
+		if(handler->_listen_sock)
+		{
+			delete handler->_listen_sock;
+			handler->_listen_sock = NULL;
 		}
 	}
 

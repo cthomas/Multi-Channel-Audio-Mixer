@@ -6,11 +6,13 @@
 
 class AudioMixerInterface;
 class ClientWorker;
+class TCPServerSocket;
 
 class ClientHandler
 	: public BasicThread
 {
 private:
+	TCPServerSocket *_listen_sock;
 	ClientHandler();
 	AudioMixerInterface *_mixer;
 
