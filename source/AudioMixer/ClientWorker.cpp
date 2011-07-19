@@ -173,13 +173,11 @@ void ClientWorker::playSock()
 				rc = _sock->recv(samples, buffer_len*sizeof(AudioSample_t));
 			}
 
-			if(rc < 0)
-			{
-				//Drop this channel's samples
-				pop_all();
-			}
+			//Drop this channel's samples
+			pop_all();
 		}
 
+		_shutdown = true;
 		TRACE("Worker completed playback...\n");
 	}
 }
