@@ -77,6 +77,9 @@ void AlsaPlayback::setupHandle()
 			frames = AlsaPlayback::FRAME_PERIOD;
 			snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &frames, &dir);
 
+			snd_pcm_uframes_t buf_size = MINIMUM_SAMPLE_SET_SIZE;
+			snd_pcm_hw_params_set_buffer_size_near(alsa_handle, params, &buf_size);
+
 			/* Write the parameters to the driver */
 			rc = snd_pcm_hw_params(alsa_handle, params);
 

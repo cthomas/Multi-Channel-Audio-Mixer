@@ -157,7 +157,7 @@ void ClientWorker::playSock()
 	{
 		TRACE("Playing from sock...\n");
 
-		size_t buffer_len = SAMPLE_BUFFER_SIZE;
+		size_t buffer_len = MINIMUM_SAMPLE_SET_SIZE;
 		AudioSample_t *samples = new AudioSample_t[buffer_len];
 
 		if(samples)

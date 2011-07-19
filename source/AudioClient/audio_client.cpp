@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 					pFile = NULL;
 
 					print_usage = false;
-					size_t samples_to_push = SAMPLE_BUFFER_SIZE;
+					size_t samples_to_push = MINIMUM_SAMPLE_SET_SIZE;
 
 					for(size_t i = 0; i < data_size/sizeof(AudioSample_t); i+=samples_to_push)
 					{
