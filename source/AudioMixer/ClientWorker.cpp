@@ -156,19 +156,30 @@ void ClientWorker::playSock()
 	if(_sock)
 	{
 		TRACE("Playing from sock...\n");
-		AudioSample_t samples[22050] = {0};
 
-		ssize_t rc = _sock->recv(&samples, sizeof(samples));
+		size_t buffer_len = SAMPLE_BUFFER_SIZE;
+		AudioSample_t *samples = new AudioSample_t[buffer_len];
 
-		while(rc > 0)
+		if(samples)
 		{
-			push_back(&samples[0], rc/sizeof(AudioSample_t));
-			memset(&samples[0], 0, sizeof(samples));
+			ssize_t rc = _sock->recv(samples, buffer_len*sizeof(AudioSample_t));
 
-			usleep(1000*800);
-			rc = _sock->recv(&samples[0], sizeof(samples)/sizeof(AudioSample_t));
+			while(rc > 0)
+			{
+				push_back(samples, rc/sizeof(AudioSample_t));
+				memset(samples, 0, buffer_len);
+
+				usleep(1000*800);
+				rc = _sock->recv(samples, buffer_len*sizeof(AudioSample_t));
+			}
+
+			if(rc < 0)
+			{
+				//Drop this channel's samples
+				pop_all();
+			}
 		}
 
-		TRACE("Working completed playback...\n");
+		TRACE("Worker completed playback...\n");
 	}
 }
