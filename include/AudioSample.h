@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define SAMPLE_BUFFER_SIZE 32768
+
 typedef int16_t AudioSample_t;
 
 #endif
