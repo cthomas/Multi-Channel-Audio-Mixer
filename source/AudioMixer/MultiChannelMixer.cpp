@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "DebugMessage.h"
 #include "MultiChannelMixer.h"
 
 bool ExternalLockingAudioChannel::externalLock()
@@ -38,31 +39,36 @@ void MultiChannelMixer::mixDown()
 	{
 		if(externalLock())
 		{
-			std::vector<AudioChannelInterface*>::iterator itt = _channels.begin();
-			std::vector<AudioSample_t> mixed_samples;
-
-			for(; itt != _channels.end(); ++itt)
+			if(_sample_queue.size() < MINIMUM_MIX_QUEUE_SIZE)
 			{
-				if(*itt)
-				{
-					std::vector<AudioSample_t> channel_samples = (*itt)->pop_all();
+				std::vector<AudioChannelInterface*>::iterator itt = _channels.begin();
+				std::vector<AudioSample_t> mixed_samples;
 
-					for(size_t i = 0; i < channel_samples.size(); i++)
+				for(; itt != _channels.end(); ++itt)
+				{
+					if(*itt)
 					{
-						if(i < mixed_samples.size())
+						std::vector<AudioSample_t> channel_samples = (*itt)->pop(MINIMUM_MIX_QUEUE_SIZE);
+
+
+						for(size_t i = 0; i < channel_samples.size(); i++)
 						{
-							mixed_samples[i] = mixed_samples[i] + channel_samples[i];
-						}
-						else
-						{
-							mixed_samples.push_back(channel_samples[i]);
+							if(i < mixed_samples.size())
+							{
+								mixed_samples[i] = mixed_samples[i] + channel_samples[i];
+							}
+							else
+							{
+								mixed_samples.push_back(channel_samples[i]);
+							}
 						}
 					}
 				}
+
+				TRACEF("Mixed down [%zu] samples\n", mixed_samples.size());
+
+				push_back_internal(mixed_samples);
 			}
-
-			push_back_internal(mixed_samples);
-
 			externalUnlock();
 		}
 		_mixer_mutex.unlock();
