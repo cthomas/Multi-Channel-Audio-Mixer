@@ -44,10 +44,8 @@ void *PlaybackThread::threadMain(void *data)
 
 			if(samples.size() > 0)
 			{
-				TRACE("Playing audio from channel...\n");
 				playback_interface->playAudio(samples);
 				TRACEF("Num Audio Samples Played [%zu]\n", playback_interface->getNumSamplesPlayed());
-
 			}
 
 			playback->waitData();
