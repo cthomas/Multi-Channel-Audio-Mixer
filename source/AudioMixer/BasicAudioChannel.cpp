@@ -105,6 +105,23 @@ const std::vector<AudioSample_t> BasicAudioChannel::pop_all()
 	return samples;
 }
 
+const std::vector<AudioSample_t> BasicAudioChannel::pop(size_t n)
+{
+	std::vector<AudioSample_t> samples;
+
+	if(_channel_mutex.lock())
+	{
+		size_t num_samples = _sample_queue.size() > n ? n : _sample_queue.size();
+		for(size_t i = 0; i < num_samples; i++)
+		{
+			samples.push_back(pop_front_internal());
+		}
+		_channel_mutex.unlock();
+	}
+
+	return samples;
+}
+
 size_t BasicAudioChannel::size()
 {
 	size_t ret = 0;

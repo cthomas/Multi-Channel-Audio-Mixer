@@ -27,6 +27,7 @@ public: //AudioChannelInterface
 	virtual void push_back(const AudioSample_t *samples, size_t num_samples);
 	virtual const AudioSample_t pop_front();
 	virtual const std::vector<AudioSample_t> pop_all();
+	virtual const std::vector<AudioSample_t> pop(size_t n);
 	virtual size_t size();
 	virtual void clear();
 	virtual void setConditionToSignal(pthread_cond_t *cond);
