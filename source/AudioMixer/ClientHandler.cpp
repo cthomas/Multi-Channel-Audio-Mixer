@@ -58,7 +58,7 @@ ClientHandler *ClientHandler::startClientHandler(AudioMixerInterface *mixer)
 	return handler;
 }
 
-#define INTRO_FILE "test/data/birds.wav"
+#define INTRO_FILE "/usr/local/share/audio_mixer/birds.wav"
 
 void *ClientHandler::threadMain(void *data)
 {
