@@ -40,7 +40,7 @@ void *PlaybackThread::threadMain(void *data)
 			//Pump the mixer
 			playback->mixDown();
 
-			std::vector<AudioSample_t> samples = playback->pop_all();
+			std::vector<AudioSample_t> samples = playback->pop(MINIMUM_SAMPLE_SET_SIZE);
 
 			if(samples.size() > 0)
 			{
