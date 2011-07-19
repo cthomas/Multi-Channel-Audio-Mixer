@@ -1,68 +1,80 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 #include "AudioSample.h"
 #include "PracticalSocket.h"
 
-#define WAVE_FILE "test/data/test_22050_1.wav"
 
 int main(int argc, char **argv)
 {
-//	if(argc == 4)
+	char usage_str[128] = {0};
+	snprintf(usage_str, sizeof(usage_str), "Usage: %s wav_file host port\n", argv[0]);
+	bool print_usage = true;
+
+	if(argc == 4)
 	{
-		std::string msg = "QUIT";
-		printf("Audio Client\n");
+		std::string file = argv[1] != NULL ? std::string(argv[1]) : "";
+		std::string ip = argv[2] != NULL ? std::string(argv[2]) : "";
+		unsigned short port = argv[2] != NULL ? atoi(argv[3]) : 0;
 
-		TCPSocket sock("localhost", 22000);
-
-		FILE *pFile = fopen(WAVE_FILE, "rb");
-
-		if(pFile)
+		if(!file.empty() && !ip.empty() && (port != 0))
 		{
-			fseek(pFile, 40, SEEK_SET);
-
-			int32_t data_size = 0;
-			fread(&data_size, sizeof(int32_t), 1, pFile);
-
-			AudioSample_t *samples = new AudioSample_t[data_size];
-
-			if(samples)
+			try
 			{
-				fseek(pFile, 44, SEEK_SET);
-				fread(samples, data_size, 1, pFile);
+				TCPSocket sock(ip.c_str(), port);
+
+				printf("Audio Client playing [%s] to host [%s] on port [%u]\n", file.c_str(), ip.c_str(), port);
+
+				FILE *pFile = fopen(file.c_str(), "rb");
+
+				if(pFile)
+				{
+					fseek(pFile, 40, SEEK_SET);
+
+					int32_t data_size = 0;
+					fread(&data_size, sizeof(int32_t), 1, pFile);
+
+					AudioSample_t *samples = new AudioSample_t[data_size/sizeof(AudioSample_t)];
+
+					if(samples)
+					{
+						fseek(pFile, 44, SEEK_SET);
+						fread(samples, data_size, 1, pFile);
+					}
+
+					fclose(pFile);
+					pFile = NULL;
+
+					print_usage = false;
+					size_t samples_to_push = SAMPLE_BUFFER_SIZE;
+
+					for(size_t i = 0; i < data_size/sizeof(AudioSample_t); i+=samples_to_push)
+					{
+						size_t actual_samples_pushed = (i + samples_to_push < data_size/sizeof(AudioSample_t)) ? samples_to_push : data_size/sizeof(AudioSample_t)-i;
+
+						sock.send(&samples[i], actual_samples_pushed*sizeof(AudioSample_t));
+						usleep(1000*1000*1);
+					}
+
+					delete[] samples;
+					samples = NULL;
+				}
 			}
-
-			fclose(pFile);
-			pFile = NULL;
-
-			size_t samples_to_push = 22050;
-
-			for(size_t i = 0; i < data_size/sizeof(AudioSample_t); i+=samples_to_push)
+			catch(SocketException &e)
 			{
-				size_t actual_samples_pushed = (i + samples_to_push < data_size/sizeof(AudioSample_t)) ? samples_to_push : data_size/sizeof(AudioSample_t)-i;
-
-				try
-				{
-					sock.send(&samples[i], actual_samples_pushed*sizeof(AudioSample_t));
-				}
-				catch(SocketException &e)
-				{
-					printf("Unable to send data...caught exception[%s]\n", e.what());
-				}
-
-				usleep(1000*1000*1);
+				printf("Unable to send data...caught exception[%s]\n", e.what());
+				print_usage = true;
 			}
-
-			delete[] samples;
-			samples = NULL;
 		}
 	}
-//	else
-//	{
-//		printf("Usage: %s wav_file host port\n", argv[0]);
-//	}
+
+	if(print_usage)
+	{
+		printf("%s", usage_str);;
+	}
 
 	return 0;
 }
