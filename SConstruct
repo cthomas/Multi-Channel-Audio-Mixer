@@ -37,8 +37,8 @@ libs = [
 	'rt'
 ]
 
-main_program_name = 'ece554_project'
 mixer_program_name = 'audio_mixing_server'
+client_program_name = 'audio_client'
 
 #***************************************************************************************#
 # The source files that we want to use for the build					#
@@ -46,16 +46,21 @@ mixer_program_name = 'audio_mixing_server'
 common_src = [
 	'BasicThread.cpp',
 	'Mutex.cpp',
+	'PracticalSocket.cpp',
 ]
 
 audio_mixer_src = [
 	'AlsaAudioPlayback.cpp',
+	'audio_mixer.cpp',
 	'BasicAudioChannel.cpp',
 	'ClientHandler.cpp',
 	'ClientWorker.cpp',
-	'audio_mixer.cpp',
 	'MultiChannelMixer.cpp',
 	'PlaybackThread.cpp'
+]
+
+audio_client_src = [
+	'audio_client.cpp'
 ]
 
 #***************************************************************************************#
@@ -123,9 +128,13 @@ if '-h' not in sys.argv:
 	for f in common_src:
 		common_object_root_src.append(os.path.join(object_root, common_src_root, f))
 
-	mixer_object_root_src = common_object_root_src
+	mixer_object_root_src = list(common_object_root_src)
 	for f in audio_mixer_src:
 		mixer_object_root_src.append(os.path.join(object_root, mixer_src_root, f))
+
+	client_object_root_src = list(common_object_root_src)
+	for f in audio_client_src:
+		client_object_root_src.append(os.path.join(object_root, client_src_root, f))
 
 	env = Environment();
 
@@ -142,3 +151,4 @@ if '-h' not in sys.argv:
 
 	env.VariantDir(object_root, main_src_root, duplicate=0)
 	env.Program(target = os.path.join(build_root, mixer_program_name), source = mixer_object_root_src)
+	env.Program(target = os.path.join(build_root, client_program_name), source = client_object_root_src)
