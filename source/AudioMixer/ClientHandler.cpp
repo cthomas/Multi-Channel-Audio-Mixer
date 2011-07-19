@@ -58,6 +58,8 @@ ClientHandler *ClientHandler::startClientHandler(AudioMixerInterface *mixer)
 	return handler;
 }
 
+#define INTRO_FILE "test/data/birds.wav"
+
 void *ClientHandler::threadMain(void *data)
 {
 	ClientHandler *handler = static_cast<ClientHandler*>(data);
@@ -65,35 +67,19 @@ void *ClientHandler::threadMain(void *data)
 	if(handler)
 	{
 		handler->setThreadIdentifier("ClientHandler");
-
-		//handler->_listen_sock = new NonBlockTCPServerSocket(22000, 5);
 		handler->_listen_sock = new TCPServerSocket(22000, 5);
 
-//		ClientWorker *worker1 = ClientWorker::startClientWorker();
-//		ClientWorker *worker2 = ClientWorker::startClientWorker();
-//		handler->_workers.push_back(worker1);
-//		handler->_workers.push_back(worker2);
-//		handler->_mixer->addChannel(worker1);
-//		handler->_mixer->addChannel(worker2);
+		ClientWorker *worker = ClientWorker::startClientWorker();
+		if(worker)
+		{
+			handler->_workers.push_back(worker);
+			handler->_mixer->addChannel(worker);
+			worker->startPlaybackFile(INTRO_FILE);
+		}
 
 		size_t sleep_time_secs = 0;
 		while(!handler->shutdown())
 		{
-//			if(sleep_time_secs == 5)
-//			{
-//				if(worker1)
-//				{
-//					worker1->startPlaybackFile(PLAYBACK_FILE);
-//				}
-//			}
-//			else if(sleep_time_secs == 10)
-//			{
-//				if(worker2)
-//				{
-//					worker2->startPlaybackFile(VOICEOVER_FILE);
-//				}
-//			}
-
 			try
 			{
 				if(handler->_listen_sock)
