@@ -1,4 +1,90 @@
-Embedded Audio Mixer
-Christopher Thomas
-ECE 554 - Embedded Systems
-University of Michigan - Dearborn
+*******************************************************************************
+ *    _____           _              _     _          _ 
+ *   | ____|_ __ ___ | |__   ___  __| | __| | ___  __| |
+ *   |  _| | '_ ` _ \| '_ \ / _ \/ _` |/ _` |/ _ \/ _` |
+ *   | |___| | | | | | |_) |  __/ (_| | (_| |  __/ (_| |
+ *   |_____|_| |_| |_|_.__/ \___|\__,_|\__,_|\___|\__,_|
+ *  __  __       _ _   _      _                            _ 
+ * |  \/  |_   _| | |_(_) ___| |__   __ _ _ __  _ __   ___| |
+ * | |\/| | | | | | __| |/ __| '_ \ / _` | '_ \| '_ \ / _ \ |
+ * | |  | | |_| | | |_| | (__| | | | (_| | | | | | | |  __/ |
+ * |_|  |_|\__,_|_|\__|_|\___|_| |_|\__,_|_| |_|_| |_|\___|_|
+ *		  __  __ _                 
+ *		 |  \/  (_)__  __ ___ _ __ 
+ *		 | |\/| | |\ \/ // _ \ '__|
+ *		 | |  | | | >  <|  __/ |   
+ *		 |_|  |_|_|/_/\_\\___|_| 
+ *
+*******************************************************************************
+ * Author: Christopher Thomas
+ * Term Project
+ * ECE 554 - Embedded Systems
+ * University of Michigan - Dearborn
+ * chrtho@umd.umich.edu
+*******************************************************************************
+ * LICENSING INFORMATION
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*******************************************************************************
+ *
+ * GENERAL
+ * The aim of this project was to implement an audio mixer that runs on an embedded
+ * target and allows for multiple wireless streams to be mixed and outputted.
+ * This software was written with the intent to provide a clean, object-oriented,
+ * open source approach to the problem at hand.  It runs on the desktop and 
+ * arm-based linux environments and utilized the alsa library for device-specific
+ * playback.  The client-handling and mixing code was written custom for this project.
+ *
+*******************************************************************************
+ *
+ * BUILDING
+ * To build this software, there are some dependencies and assumptions that are made.
+ * You will need all of the following in order to be able to build this software:
+ * >Build System: scons
+ * >Libraries: libpthread, librt, libglib-2.0, libasound2
+ * >OS: Ubuntu Linux version 10.10 on i386 and 10.04 on pandaboard
+ * 
+ * In order to build both the audio_mixing_server and audio_client binaries, simply
+ * issue the command scons in the root of this code distribution.
+ *
+*******************************************************************************
+ * 
+ * RUNNING
+ * This software, both audio_mixing_server and audio_client are usable on linux-based 
+ * i386 and ARM-based environments. The system running the server will need some sort
+ * of network interface available, at least the loopback, in order to work.
+ * 
+ * Start the server by executing:
+ * >./build/audio_mixing_server 
+ * 
+ * Start a client by executing:
+ * >./build/audio_client SOME_WAV_FILE IP_OF_SERVER 22000
+ * (ie ./build/audio_client test.wav localhost 22000)
+ * (ie ./build/audio_client test.wav 192.168.0.1 22000)
+ * 
+ * The client will connect to the server and stream audio if it is accessible. 
+ * Otherwise, an exception is thrown and a meaningful error printed.
+ *
+*******************************************************************************
+ * 
+ * OPEN SOURCE CREDITS
+ * This project utilized open source software in order to achieve a viable end product.
+ * Credit is due to the following:
+ * >Sockets: Practical C++ Sockets implementation from a Baylor Professor obtainable from:
+ * http://cs.baylor.edu/~donahoo/practical/CSockets/practical/
+ * >Linux: Ubuntu Linux was used as both the development and production environments.
+ * Ubuntu for i386 is obtainable from: http://www.ubuntu.com/
+ * Ubuntu for pandaboard is obtainable from: http://www.omappedia.org/wiki/OMAP_Ubuntu_Main
+ *
+*******************************************************************************
