@@ -5,6 +5,9 @@
 
 #include "ClientWorker.h"
 
+/**
+* @brief ClientWorker constructor
+*/
 ClientWorker::ClientWorker()
 	: BasicThread(1024*128)
 {
@@ -14,6 +17,9 @@ ClientWorker::ClientWorker()
 	pthread_cond_init(&_worker_cond, NULL);
 }
 
+/**
+* @brief ClientWorker destructor
+*/
 ClientWorker::~ClientWorker()
 {
 	if(_thread_mutex.lock())
@@ -29,6 +35,13 @@ ClientWorker::~ClientWorker()
 	pthread_cond_destroy(&_worker_cond);
 }
 
+/**
+* @brief Thread function that runs the ClientWorker
+*
+* @param data A void pointer to a ClientWorker
+*
+* @return NULL
+*/
 void *ClientWorker::threadMain(void *data)
 {
 	ClientWorker *worker = static_cast<ClientWorker*>(data);
@@ -65,6 +78,11 @@ void *ClientWorker::threadMain(void *data)
 	return NULL;
 }
 
+/**
+* @brief Create and start a ClientWorker thread
+*
+* @return The created ClientWorker pointer
+*/
 ClientWorker *ClientWorker::startClientWorker()
 {
 	ClientWorker *worker = new ClientWorker();
@@ -78,6 +96,11 @@ ClientWorker *ClientWorker::startClientWorker()
 	return worker;
 }
 
+/**
+* @brief Set the name of the file to play for this ClientWorker
+*
+* @param filepath The path to a wav file
+*/
 void ClientWorker::startPlaybackFile(const std::string & filepath)
 {
 	if(_thread_mutex.lock())
@@ -88,6 +111,9 @@ void ClientWorker::startPlaybackFile(const std::string & filepath)
 	}
 }
 
+/**
+* @brief Begin playback of the external wav file
+*/
 void ClientWorker::playFile()
 {
 	_thread_mutex.lock();
@@ -132,6 +158,11 @@ void ClientWorker::playFile()
 	}
 }
 
+/**
+* @brief Set the TCPSocket to use as an AudioSample_t source
+*
+* @param sock A pointer to a TCPSocket that can provide AudioSample_t data
+*/
 void ClientWorker::startPlaybackSock(TCPSocket *sock)
 {
 	if(_thread_mutex.lock())
@@ -151,6 +182,9 @@ void ClientWorker::startPlaybackSock(TCPSocket *sock)
 	}
 }
 
+/**
+* @brief Begin playback of AudioSample_t from the previously set TCPSocket
+*/
 void ClientWorker::playSock()
 {
 	if(_sock)

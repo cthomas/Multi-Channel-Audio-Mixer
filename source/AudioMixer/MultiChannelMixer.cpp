@@ -3,21 +3,37 @@
 #include "DebugMessage.h"
 #include "MultiChannelMixer.h"
 
+/**
+* @brief Get an exclusive lock to the ExternalLockingAudioChannel
+*
+* @return true on success, false otherwise
+*/
 bool ExternalLockingAudioChannel::externalLock()
 {
 	return _channel_mutex.lock();
 }
 
+/**
+* @brief Release the lock on the ExternalLockingAudioChannel
+*
+* @return true on success, false otherwise
+*/
 bool ExternalLockingAudioChannel::externalUnlock()
 {
 	return _channel_mutex.unlock();
 }
 
+/**
+* @brief MultiChannelMixer constructor
+*/
 MultiChannelMixer::MultiChannelMixer()
 {
 	pthread_cond_init(&_mixer_cond, NULL);
 }
 
+/**
+* @brief MultiChannelMixer destructor
+*/
 MultiChannelMixer::~MultiChannelMixer()
 {
 	//Drop any channels we have
@@ -25,6 +41,9 @@ MultiChannelMixer::~MultiChannelMixer()
 	pthread_cond_destroy(&_mixer_cond);
 }
 
+/**
+* @brief Aggregate the many AudioChannelInterface that were added to the MultiChannelMixer into the MultiChannelMixer single output channel
+*/
 void MultiChannelMixer::mixDown()
 {
 	if(_mixer_mutex.lock())
@@ -67,6 +86,11 @@ void MultiChannelMixer::mixDown()
 	}
 }
 
+/**
+* @brief Add an AudioChannelInterface to be mixed by the MultiChannelMixer
+*
+* @param channel An AudioChannelInterface pointer that should be included in the mixing operation
+*/
 void MultiChannelMixer::addChannel(AudioChannelInterface *channel)
 {
 	if(channel)
@@ -84,6 +108,11 @@ void MultiChannelMixer::addChannel(AudioChannelInterface *channel)
 	}
 }
 
+/**
+* @brief Remove an AudioChannelInterface from the MultiChannelMixer
+*
+* @param channel An AudioChannelInterface pointer equivalent to the AudioChannelInterface to remove
+*/
 void MultiChannelMixer::removeChannel(AudioChannelInterface *channel)
 {
 	if(channel)
@@ -104,6 +133,11 @@ void MultiChannelMixer::removeChannel(AudioChannelInterface *channel)
 	}
 }
 
+/**
+* @brief Get the number of AudioChannelInterface currently added to the MultiChannelMixer for mixing
+*
+* @return The number of AudioChannelInterface
+*/
 size_t MultiChannelMixer::numChannels()
 {
 	size_t num_channels = 0;
@@ -117,6 +151,9 @@ size_t MultiChannelMixer::numChannels()
 	return num_channels;
 }
 
+/**
+* @brief Block until there is data available from at least one input channel or 3 seconds, whichever is least
+*/
 void MultiChannelMixer::waitData()
 {
 	if(externalLock())
@@ -133,6 +170,11 @@ void MultiChannelMixer::waitData()
 	}
 }
 
+/**
+* @brief External interface to remove all AudioChannelInterface from the MultiChannelMixer
+* @note This will blindly drop the channels, but not deallocate them
+* @note This interface performs an atomic lock before clearing the AudioChannelInterface
+*/
 void MultiChannelMixer::dropChannels()
 {
 	if(externalLock())
@@ -142,6 +184,9 @@ void MultiChannelMixer::dropChannels()
 	}
 }
 
+/**
+* @brief Remove all AudioChannelInterface from the MultiChannelMixer AudioChannelInterface vector
+*/
 void MultiChannelMixer::clearChannelVector()
 {
 	std::vector<AudioChannelInterface*>::iterator itt = _channels.begin();

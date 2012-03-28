@@ -3,6 +3,10 @@
 
 #include <pthread.h>
 
+/**
+ * @class Mutex
+ * @brief Class that implements a mutually exclusive locking/unlocking mechanism
+ */
 class Mutex
 {
 private:

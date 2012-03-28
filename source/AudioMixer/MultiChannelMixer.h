@@ -7,6 +7,10 @@
 #include "BasicAudioChannel.h"
 #include "Mutex.h"
 
+/**
+ * @class ExternalLockingAudioChannel
+ * @brief A BasicAudioChannel that uses a Mutex for atomic access
+ */
 class ExternalLockingAudioChannel
 	: public BasicAudioChannel
 {
@@ -15,6 +19,10 @@ public:
 	bool externalUnlock();
 };
 
+/**
+ * @class MultiChannelMixer
+ * @brief Class that implements the AudioMixerInterface and functions as an ExternalLockingAudioChannel
+ */
 class MultiChannelMixer
 	: public AudioMixerInterface, public ExternalLockingAudioChannel
 {

@@ -6,13 +6,24 @@
 
 #include "PlaybackThread.h"
 
+/**
+* @brief PlaybackThread constructor
+*/
 PlaybackThread::PlaybackThread()
 	: BasicThread(1024*128)
 {}
 
+/**
+* @brief PlaybackThread destructor
+*/
 PlaybackThread::~PlaybackThread()
 {}
 
+/**
+* @brief Create and start a PlaybackThread
+*
+* @return A pointer to the created PlaybackThread
+*/
 PlaybackThread *PlaybackThread::startPlaybackThread()
 {
 	PlaybackThread *playback = new PlaybackThread();
@@ -26,6 +37,13 @@ PlaybackThread *PlaybackThread::startPlaybackThread()
 	return playback;
 }
 
+/**
+* @brief Main thread function for a PlaybackThread
+* @note This function implements the mixing and playback logic used by the PlaybackThread
+* @param data A void pointer to the PlaybackThread instance
+*
+* @return NULL
+*/
 void *PlaybackThread::threadMain(void *data)
 {
 	PlaybackThread *playback = static_cast<PlaybackThread*>(data);

@@ -4,6 +4,10 @@
 #include "BasicThread.h"
 #include "MultiChannelMixer.h"
 
+/**
+ * @class PlaybackThread
+ * @brief Class that combines the functionality of the MultiChannelMixer and BasicThread in order to play AudioSample_t
+ */
 class PlaybackThread
 	  : public MultiChannelMixer,
 		public BasicThread
