@@ -43,15 +43,8 @@ g++ ${GCOV_FLAGS} -Wall runner.cpp -o runner -I ../cxxtest \
 
 if [ -x ./runner ]
 then
-	if [ -n "`which valgrind`" ] && [ "${VALGRIND_STATUS}" != "off" ]
-	then
-		valgrind --leak-check=full -q --num-callers=15 ./runner
-		retcode=$?
-	else
-		echo "Valgrind is currently off"
        	./runner
        	retcode=$?
-	fi
 
 	if [ -z "${NO_GCOV}" ]
 	then
