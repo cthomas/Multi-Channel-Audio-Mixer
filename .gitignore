@@ -13,3 +13,5 @@ test/*/*.gcno
 test/*/*.gcov
 test/*/runner*
 test/*/.kdbgrc*
+html
+latex
