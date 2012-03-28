@@ -12,3 +12,7 @@ tags:
 .PHONY: clean
 clean:
 	scons -c
+
+.PHONY: doxygen
+doxygen:
+	doxygen
