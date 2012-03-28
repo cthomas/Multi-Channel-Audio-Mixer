@@ -127,6 +127,7 @@ public:
 
 	void test_play_samples_multiple_times_num_samples_grows()
 	{
+		player->resetNumSamplesPlayed();
 		size_t num = playSamples();
 		num+= playSamples();
 

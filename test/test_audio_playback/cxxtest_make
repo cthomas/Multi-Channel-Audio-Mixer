@@ -34,10 +34,9 @@ g++ ${GCOV_FLAGS} -Wall runner.cpp -o runner -I ../cxxtest \
 		-I ../../source/AudioMixer \
 		-I ./ \
 		-I /usr/include \
-		-I /usr/include/glib-2.0 \
-		-I /usr/lib/glib-2.0/include \
+		`pkg-config --cflags glib-2.0` \
 		-l asound \
-		-l glib-2.0 \
+		`pkg-config --libs glib-2.0` \
 		-l rt \
 		-l z \
 		${EXTRA_CXXFLAGS}
