@@ -28,6 +28,8 @@ public:
 	{
 		mixer.clear();
 		channel.clear();
+
+		mixer.dropChannels();
 	}
 
 	void test_initial_num_channels_zero()
@@ -128,6 +130,8 @@ public:
 		mixer.mixDown();
 
 		TS_ASSERT_EQUALS(4u, mixer.pop_all().size());
+
+		mixer.dropChannels();
 	}
 
 	void test_add_two_channels_with_some_data_one_without_mix_down_has_same_data_as_the_populated_channel()
@@ -148,6 +152,8 @@ public:
 		{
 			TS_ASSERT_EQUALS(1, samples[i]);
 		}
+
+		mixer.dropChannels();
 	}
 
 	void test_add_two_channels_with_different_data_mix_down_mixes_the_two_channels_to_output()
@@ -172,6 +178,8 @@ public:
 		{
 			TS_ASSERT_EQUALS(3, samples[i]);
 		}
+
+		mixer.dropChannels();
 	}
 
 	void test_add_two_channels_with_varying_data_mix_down_mixes_the_two_channels_to_output()
@@ -196,6 +204,8 @@ public:
 		{
 			TS_ASSERT_EQUALS(5, samples[i]);
 		}
+
+		mixer.dropChannels();
 	}
 
 	void test_add_two_channels_with_varying_length_mix_down_mixes_the_two_channels_to_output()
@@ -230,6 +240,8 @@ public:
 		{
 			TS_ASSERT_EQUALS(4, samples[i]);
 		}
+
+		mixer.dropChannels();
 	}
 
 	void test_add_many_channels_all_different_lengths_mix_down_outputs_a_channel_of_the_greatest_length()
@@ -283,6 +295,8 @@ public:
 		std::vector<AudioSample_t> samples = mixer.pop_all();
 
 		TS_ASSERT_EQUALS(samples.size(), max_size);
+
+		mixer.dropChannels();
 	}
 
 	void test_add_many_channels_all_different_lengths_mix_down_outputs_a_channel_that_is_mixed_correctly()
@@ -352,6 +366,8 @@ public:
 		TS_ASSERT_EQUALS(3, samples[9]);
 		TS_ASSERT_EQUALS(2, samples[10]);
 		TS_ASSERT_EQUALS(1, samples[11]);
+
+		mixer.dropChannels();
 	}
 };
 

@@ -21,15 +21,7 @@ MultiChannelMixer::MultiChannelMixer()
 MultiChannelMixer::~MultiChannelMixer()
 {
 	//Drop any channels we have
-	std::vector<AudioChannelInterface*>::iterator itt = _channels.begin();
-	for(; itt != _channels.end(); ++itt)
-	{
-		if((*itt))
-		{
-			(*itt)->setConditionToSignal(NULL);
-		}
-	}
-	_channels.clear();
+	clearChannelVector();
 	pthread_cond_destroy(&_mixer_cond);
 }
 
@@ -140,3 +132,26 @@ void MultiChannelMixer::waitData()
 		externalUnlock();
 	}
 }
+
+void MultiChannelMixer::dropChannels()
+{
+	if(externalLock())
+	{
+		clearChannelVector();
+		externalUnlock();
+	}
+}
+
+void MultiChannelMixer::clearChannelVector()
+{
+	std::vector<AudioChannelInterface*>::iterator itt = _channels.begin();
+	for(; itt != _channels.end(); ++itt)
+	{
+		if((*itt))
+		{
+			(*itt)->setConditionToSignal(NULL);
+		}
+	}
+	_channels.clear();
+}
+

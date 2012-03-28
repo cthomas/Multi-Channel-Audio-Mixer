@@ -11,6 +11,7 @@ public:
 	virtual void mixDown() = 0;
 	virtual void addChannel(AudioChannelInterface *channel) = 0;
 	virtual void removeChannel(AudioChannelInterface *channel) = 0;
+	virtual void dropChannels() = 0;
 	virtual size_t numChannels() = 0;
 	virtual void waitData() = 0;
 };

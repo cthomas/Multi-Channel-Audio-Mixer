@@ -22,6 +22,8 @@ private:
 	std::vector<AudioChannelInterface*> _channels;
 	Mutex _mixer_mutex;
 	pthread_cond_t _mixer_cond;
+
+	void clearChannelVector();
 public:
 	MultiChannelMixer();
 	virtual ~MultiChannelMixer();
@@ -30,6 +32,7 @@ public: //AudioMixerInterface
 	virtual void mixDown();
 	virtual void addChannel(AudioChannelInterface *channel);
 	virtual void removeChannel(AudioChannelInterface *channel);
+	virtual void dropChannels();
 	virtual size_t numChannels();
 	virtual void waitData();
 };
