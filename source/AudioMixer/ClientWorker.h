@@ -7,6 +7,12 @@
 
 class TCPSocket;
 
+/**
+ * @class ClientWorker
+ * @brief Class that handles a client connection or file and presents audio data as a BasicAudioChannel
+ * @note ClientWorker spawns a thread to run asynchronously to its creator's thread
+ * @note Destroying a ClientWorker will force its thread to shutdown and join context with the caller's thread
+ */
 class ClientWorker
 	: public BasicAudioChannel,
 		public BasicThread

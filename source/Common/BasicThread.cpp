@@ -1,6 +1,11 @@
 #include "BasicThread.h"
 #include "DebugMessage.h"
 
+/**
+* @brief BasicThread constructor
+*
+* @param stack_size
+*/
 BasicThread::BasicThread(size_t stack_size)
 {
 	_shutdown = false;
@@ -9,6 +14,9 @@ BasicThread::BasicThread(size_t stack_size)
 	pthread_attr_setstacksize(&_attr, stack_size);
 }
 
+/**
+* @brief BasicThread destructor
+*/
 BasicThread::~BasicThread()
 {
 	printf("Thread [%s] shutting down...\n", _thread_str.c_str());
@@ -19,6 +27,14 @@ BasicThread::~BasicThread()
 	pthread_attr_destroy(&_attr);
 }
 
+/**
+* @brief Start a thread using the function thread_main passing it parameter data
+*
+* @param thread_main The function that will be run by the spawned thread
+* @param data The data pointer to pass to the thread function
+*
+* @return true on successful thread creation, false otherwise
+*/
 bool BasicThread::start(void *(*thread_main)(void*), void *data)
 {
 	bool ret = true;
@@ -31,6 +47,9 @@ bool BasicThread::start(void *(*thread_main)(void*), void *data)
 	return ret;
 }
 
+/**
+* @brief Function that signals the thread to shut down
+*/
 void BasicThread::signalShutdown()
 {
 	if(_thread_mutex.lock())
@@ -40,6 +59,11 @@ void BasicThread::signalShutdown()
 	}
 }
 
+/**
+* @brief Interface to get whether a shutdown has been triggered
+*
+* @return true if shutdown has been triggered, false otherwise
+*/
 bool BasicThread::shutdown()
 {
 	bool ret = false;
@@ -53,6 +77,11 @@ bool BasicThread::shutdown()
 	return ret;
 }
 
+/**
+* @brief Set a human-readable identifier for the BasicThread
+*
+* @param id_str The string to associate with this BasicThread
+*/
 void BasicThread::setThreadIdentifier(const std::string & id_str)
 {
 	if(_thread_mutex.lock())

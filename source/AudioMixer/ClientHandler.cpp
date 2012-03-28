@@ -11,6 +11,9 @@
 #define PLAYBACK_FILE "test/data/test_22050_1.wav"
 #define VOICEOVER_FILE "test/data/voice_over.wav"
 
+/**
+* @brief ClientHandler constructor
+*/
 ClientHandler::ClientHandler()
 	: BasicThread(1024*128)
 {
@@ -18,6 +21,10 @@ ClientHandler::ClientHandler()
 	_listen_sock = NULL;
 }
 
+/**
+* @brief ClientHandler destructor
+* @note This will drop all ClientWorkers and associated channels from the ClientHandler AudioMixerInterface member
+*/
 ClientHandler::~ClientHandler()
 {
 	std::vector<ClientWorker*>::iterator itt = _workers.begin();
@@ -40,6 +47,13 @@ ClientHandler::~ClientHandler()
 	_mixer = NULL;
 }
 
+/**
+* @brief Start the ClientHandler thread and add the client channels to the provided mixer
+*
+* @param mixer An AudioMixerInterface that is to be used with each client channel
+*
+* @return A pointer to the instantiated ClientHandler
+*/
 ClientHandler *ClientHandler::startClientHandler(AudioMixerInterface *mixer)
 {
 	ClientHandler *handler = new ClientHandler();
@@ -60,6 +74,13 @@ ClientHandler *ClientHandler::startClientHandler(AudioMixerInterface *mixer)
 
 #define INTRO_FILE "/usr/local/share/audio_mixer/birds.wav"
 
+/**
+* @brief The thread function to execute for each ClientHandler
+*
+* @param data A void pointer to a ClientHandler instance
+*
+* @return NULL
+*/
 void *ClientHandler::threadMain(void *data)
 {
 	ClientHandler *handler = static_cast<ClientHandler*>(data);

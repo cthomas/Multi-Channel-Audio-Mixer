@@ -5,6 +5,10 @@
 #include <string>
 #include "Mutex.h"
 
+/**
+* @class BasicThread
+* @brief Class wrapper of a thread
+*/
 class BasicThread
 {
 protected:

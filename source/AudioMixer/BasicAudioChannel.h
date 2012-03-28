@@ -6,6 +6,10 @@
 #include "AudioSample.h"
 #include "Mutex.h"
 
+/**
+ * @class BasicAudioChannel
+ * @brief Audio channel functionality that implements the AudioChannelInterface
+ */
 class BasicAudioChannel
 	: public virtual AudioChannelInterface
 {

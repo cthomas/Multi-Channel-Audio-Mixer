@@ -12,6 +12,9 @@ unsigned int AlsaPlayback::_sample_rate = 22050;
 static snd_pcm_t *alsa_handle = NULL;
 static snd_pcm_uframes_t frames = {0};
 
+/**
+* @brief AlsaPlayback constructor
+*/
 AlsaPlayback::AlsaPlayback()
 {
 	_num_samples_played = 0;
@@ -21,6 +24,9 @@ AlsaPlayback::AlsaPlayback()
 	AlsaPlayback::setupHandle();
 }
 
+/**
+* @brief AlsaPlayback destructor
+*/
 AlsaPlayback::~AlsaPlayback()
 {
 	if(alsa_handle)
@@ -32,6 +38,9 @@ AlsaPlayback::~AlsaPlayback()
 	snd_config_update_free_global();
 }
 
+/**
+* @brief Setup the ALSA handle to the audio device
+*/
 void AlsaPlayback::setupHandle()
 {
 	if(alsa_handle)
@@ -104,6 +113,11 @@ void AlsaPlayback::setupHandle()
 	}
 }
 
+/**
+* @brief Playback AudioSample_t's in samples
+*
+* @param samples An std::vector of AudioSample_t to be played back
+*/
 void AlsaPlayback::playAudio(const std::vector<AudioSample_t> & samples)
 {
 	if(samples.size() > 0)
@@ -112,6 +126,12 @@ void AlsaPlayback::playAudio(const std::vector<AudioSample_t> & samples)
 	}
 }
 
+/**
+* @brief Playback AudioSample_t's pointed to by samples
+*
+* @param samples A pointer to AudioSample_t's to be played
+* @param num_samples The number of samples pointed to by samples
+*/
 void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samples)
 {
 	if(samples && (num_samples > 0) && alsa_handle)
@@ -174,26 +194,50 @@ void AlsaPlayback::playAudio(const AudioSample_t *samples, const size_t num_samp
 	}
 }
 
+/**
+* @brief Set the playback volume
+* @note Recording/Mirroring currently unimplemented
+* @param new_volume The value to set for the playback volume
+*/
 void AlsaPlayback::setVolume(const size_t new_volume)
 {
 
 }
 
+/**
+* @brief Get the current playback volume
+* @note Recording/Mirroring currently unimplemented
+* @return The current playback volume
+*/
 size_t AlsaPlayback::getVolume() const
 {
 	return 0;
 }
 
+/**
+* @brief Set the path to a file to mirror playback output to
+* @note Recording/Mirroring currently unimplemented
+* @param path The path to a filesystem location to save the playback output
+*/
 void AlsaPlayback::setRecordingOutputPath(const std::string & path)
 {
 	_recording_path = path;
 }
 
+/**
+* @brief Retrieve the path to the recording file
+* @note Recording/Mirroring currently unimplemented
+* @return An std::string containing the path to the current playback mirror file
+*/
 const std::string AlsaPlayback::getRecordingOutputPath() const
 {
 	return _recording_path;
 }
 
+/**
+* @brief Begin mirroring/recording playback
+* @note Recording/Mirroring currently unimplemented
+*/
 void AlsaPlayback::startRecording()
 {
 	if(!_recording_path.empty())
@@ -202,26 +246,47 @@ void AlsaPlayback::startRecording()
 		TRACE("Unable to start recording...path not set\n");
 }
 
+/**
+* @brief Stop mirroring/recording playback
+* @note Recording/Mirroring currently unimplemented
+*/
 void AlsaPlayback::stopRecording()
 {
 	_recording = false;
 }
 
+/**
+* @brief Pause mirroring/recording playback
+* @note Recording/Mirroring currently unimplemented
+*/
 void AlsaPlayback::pauseRecording()
 {
 	_recording = false;
 }
 
+/**
+* @brief Get whether mirroring/recording is currently enabled
+* @note Recording/Mirroring currently unimplemented
+* @return true if recording, false otherwise
+*/
 bool AlsaPlayback::currentlyRecording() const
 {
 	return _recording;
 }
 
+/**
+* @brief Retrieve the number of samples played since last call to resetNumSamplesPlayed
+*
+* @return The number of samples played
+*/
 size_t AlsaPlayback::getNumSamplesPlayed() const
 {
 	return _num_samples_played;
 }
 
+/**
+* @brief Reset the counter keeping track of the number of samples played
+*/
 void AlsaPlayback::resetNumSamplesPlayed()
 {
 	_num_samples_played = 0;

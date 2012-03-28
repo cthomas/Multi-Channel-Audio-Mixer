@@ -4,6 +4,10 @@
 #include <vector>
 #include "AudioPlaybackInterface.h"
 
+/**
+ * @class AlsaPlayback
+ * @brief ALSA compatible class that implements the AudioPlaybackInterface
+ */
 class AlsaPlayback : public virtual AudioPlaybackInterface
 {
 private:
